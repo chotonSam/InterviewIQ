@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — InterviewIQ</title>
+    <meta
+      name="description"
+      content="Your InterviewIQ dashboard — interview history, scores, and feedback at a glance."
+    />
+
+    <!-- Tailwind CSS (CDN build, for prototyping/demo purposes) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: {
+                DEFAULT: "#14161F",
+                soft: "#1B1E2B",
+                line: "#2A2E40",
+              },
+              paper: "#F6F4EF",
+              indigo: {
+                DEFAULT: "#5B5FEF",
+                dim: "#4347C4",
+              },
+              signal: {
+                green: "#34D399",
+                amber: "#FBBF24",
+                red: "#F87171",
+              },
+              slate: {
+                muted: "#9297AC",
+              },
+            },
+            fontFamily: {
+              display: ['"Instrument Serif"', "serif"],
+              body: ["Inter", "sans-serif"],
+              mono: ['"IBM Plex Mono"', "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background-color: #14161f;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+      .focus-ring:focus-visible {
+        outline: 2px solid #5b5fef;
+        outline-offset: 3px;
+      }
+      .nav-link.active {
+        background-color: rgba(91, 95, 239, 0.14);
+        color: #f6f4ef;
+      }
+      .nav-link.active .nav-dot {
+        opacity: 1;
+      }
+    </style>
+  </head>
+
+  <body class="bg-ink text-paper font-body antialiased min-h-screen">
+    <div class="flex min-h-screen">
+      <!-- ============ SIDEBAR ============ -->
+      <aside
+        class="hidden lg:flex w-64 shrink-0 flex-col border-r border-ink-line bg-ink-soft/40"
+      >
+        <a
+          href="index.html"
+          class="flex items-center gap-2 px-6 h-16 border-b border-ink-line focus-ring"
+        >
+          <span
+            class="w-7 h-7 rounded-md bg-indigo flex items-center justify-center"
+          >
+            <span class="w-2 h-2 rounded-full bg-signal-green"></span>
+          </span>
+          <span class="font-semibold tracking-tight text-lg">InterviewIQ</span>
+        </a>
+
+        <nav class="flex-1 px-4 py-6 space-y-1 text-sm">
+          <a
+            href="dashboard.html"
+            class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-paper transition-colors focus-ring"
+          >
+            <span
+              class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-100"
+            ></span>
+            Dashboard
+          </a>
+          <a
+            href="interview.html"
+            class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring"
+          >
+            <span
+              class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"
+            ></span>
+            Mock interview
+          </a>
+          <a
+            href="#"
+            class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring"
+          >
+            <span
+              class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"
+            ></span>
+            Interview history
+          </a>
+          <a
+            href="#"
+            class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring"
+          >
+            <span
+              class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"
+            ></span>
+            Community
+          </a>
+          <a
+            href="#"
+            class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring"
+          >
+            <span
+              class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"
+            ></span>
+            Learning resources
+          </a>
+          <a
+            href="#"
+            class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring"
+          >
+            <span
+              class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"
+            ></span>
+            Profile
+          </a>
+        </nav>
+
+        <div class="px-4 py-5 border-t border-ink-line">
+          <a
+            href="#"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-ink-line/40 transition-colors focus-ring"
+          >
+            <div class="w-8 h-8 rounded-full bg-indigo/30 shrink-0"></div>
+            <div class="min-w-0">
+              <p class="text-sm font-medium truncate">Ayesha Rahman</p>
+              <p class="text-xs text-slate-muted font-mono truncate">
+                ayesha_r
+              </p>
+            </div>
+          </a>
+        </div>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <div class="flex-1 min-w-0">
+        <!-- Topbar -->
+        <header
+          class="sticky top-0 z-30 bg-ink/90 backdrop-blur border-b border-ink-line"
+        >
+          <div class="px-6 lg:px-10 h-16 flex items-center justify-between">
+            <div>
+              <p class="text-xs text-slate-muted font-mono">
+                Wednesday, 5 August
+              </p>
+              <h1 class="font-display text-2xl leading-none mt-1">
+                Welcome back, Ayesha
+              </h1>
+            </div>
+            <a
+              href="#"
+              class="inline-flex items-center gap-2 bg-indigo hover:bg-indigo-dim transition-colors text-white text-sm font-medium px-5 py-2.5 rounded-full focus-ring"
+            >
+              Start a mock interview
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </header>
+
+        <main class="px-6 lg:px-10 py-10 space-y-10">
+          <!-- ===== STAT CARDS ===== -->
+          <section class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
+              <p class="text-xs text-slate-muted font-mono mb-3">
+                Total interviews
+              </p>
+              <p class="font-display text-4xl">27</p>
+            </div>
+            <div class="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
+              <p class="text-xs text-slate-muted font-mono mb-3">
+                Average score
+              </p>
+              <p class="font-display text-4xl text-signal-green">
+                81<span class="text-slate-muted text-lg font-body">/100</span>
+              </p>
+            </div>
+            <div class="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
+              <p class="text-xs text-slate-muted font-mono mb-3">
+                Practice streak
+              </p>
+              <p class="font-display text-4xl">
+                6<span class="text-slate-muted text-lg font-body"> days</span>
+              </p>
+            </div>
+            <div class="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
+              <p class="text-xs text-slate-muted font-mono mb-3">
+                Strongest category
+              </p>
+              <p class="font-display text-2xl mt-2.5">Frontend Dev.</p>
+            </div>
+          </section>
+
+          <!-- ===== TREND + CATEGORY BREAKDOWN ===== -->
+          <section class="grid lg:grid-cols-3 gap-6">
+            <!-- Score trend -->
+            <div
+              class="lg:col-span-2 rounded-2xl border border-ink-line bg-ink-soft/40 p-6"
+            >
+              <div class="flex items-center justify-between mb-8">
+                <h2 class="font-medium">Score trend</h2>
+                <span class="text-xs font-mono text-signal-green"
+                  >+22% over last 8 interviews</span
+                >
+              </div>
+
+              <svg
+                viewBox="0 0 480 160"
+                class="w-full h-40"
+                preserveAspectRatio="none"
+                role="img"
+                aria-label="Line chart showing interview scores trending upward from 58 to 88 over eight sessions"
+              >
+                <!-- gridlines -->
+                <line
+                  x1="0"
+                  y1="10"
+                  x2="480"
+                  y2="10"
+                  stroke="#2A2E40"
+                  stroke-width="1"
+                />
+                <line
+                  x1="0"
+                  y1="80"
+                  x2="480"
+                  y2="80"
+                  stroke="#2A2E40"
+                  stroke-width="1"
+                />
+                <line
+                  x1="0"
+                  y1="150"
+                  x2="480"
+                  y2="150"
+                  stroke="#2A2E40"
+                  stroke-width="1"
+                />
+                <!-- trend line -->
+                <polyline
+                  fill="none"
+                  stroke="#5B5FEF"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  points="10,120 75,110 140,95 205,100 270,70 335,55 400,40 470,25"
+                />
+                <!-- points -->
+                <circle cx="10" cy="120" r="4" fill="#5B5FEF" />
+                <circle cx="75" cy="110" r="4" fill="#5B5FEF" />
+                <circle cx="140" cy="95" r="4" fill="#5B5FEF" />
+                <circle cx="205" cy="100" r="4" fill="#5B5FEF" />
+                <circle cx="270" cy="70" r="4" fill="#5B5FEF" />
+                <circle cx="335" cy="55" r="4" fill="#5B5FEF" />
+                <circle cx="400" cy="40" r="4" fill="#5B5FEF" />
+                <circle cx="470" cy="25" r="5" fill="#34D399" />
+              </svg>
+
+              <div
+                class="flex justify-between text-xs font-mono text-slate-muted mt-2"
+              >
+                <span>8 sessions ago</span>
+                <span>Most recent</span>
+              </div>
+            </div>
+
+            <!-- Category breakdown -->
+            <div class="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
+              <h2 class="font-medium mb-6">By category</h2>
+              <ul class="space-y-5">
+                <li>
+                  <div class="flex justify-between text-sm mb-1.5">
+                    <span>Frontend Development</span>
+                    <span class="font-mono text-slate-muted">88</span>
+                  </div>
+                  <div class="h-1.5 rounded-full bg-ink-line overflow-hidden">
+                    <div
+                      class="h-full bg-signal-green rounded-full"
+                      style="width: 88%"
+                    ></div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between text-sm mb-1.5">
+                    <span>System Design</span>
+                    <span class="font-mono text-slate-muted">74</span>
+                  </div>
+                  <div class="h-1.5 rounded-full bg-ink-line overflow-hidden">
+                    <div
+                      class="h-full bg-indigo rounded-full"
+                      style="width: 74%"
+                    ></div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between text-sm mb-1.5">
+                    <span>HR / Behavioral</span>
+                    <span class="font-mono text-slate-muted">69</span>
+                  </div>
+                  <div class="h-1.5 rounded-full bg-ink-line overflow-hidden">
+                    <div
+                      class="h-full bg-signal-amber rounded-full"
+                      style="width: 69%"
+                    ></div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between text-sm mb-1.5">
+                    <span>Backend Development</span>
+                    <span class="font-mono text-slate-muted">61</span>
+                  </div>
+                  <div class="h-1.5 rounded-full bg-ink-line overflow-hidden">
+                    <div
+                      class="h-full bg-signal-amber rounded-full"
+                      style="width: 61%"
+                    ></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ===== RECENT INTERVIEWS ===== -->
+          <section
+            class="rounded-2xl border border-ink-line bg-ink-soft/40 overflow-hidden"
+          >
+            <div
+              class="flex items-center justify-between px-6 py-5 border-b border-ink-line"
+            >
+              <h2 class="font-medium">Recent interviews</h2>
+              <a
+                href="#"
+                class="text-sm text-slate-muted hover:text-paper transition-colors focus-ring rounded"
+                >View all →</a
+              >
+            </div>
+
+            <div class="divide-y divide-ink-line">
+              <a
+                href="#"
+                class="flex items-center justify-between px-6 py-4 hover:bg-ink-line/20 transition-colors focus-ring"
+              >
+                <div class="flex items-center gap-4 min-w-0">
+                  <span
+                    class="w-2.5 h-2.5 rounded-full bg-signal-green shrink-0"
+                  ></span>
+                  <div class="min-w-0">
+                    <p class="font-medium truncate">
+                      Frontend Development · Medium
+                    </p>
+                    <p class="text-xs text-slate-muted font-mono mt-0.5">
+                      Today, 9:40 AM · 6 questions
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6 shrink-0">
+                  <span class="font-mono text-signal-green text-sm"
+                    >88/100</span
+                  >
+                  <span class="text-slate-muted" aria-hidden="true">→</span>
+                </div>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center justify-between px-6 py-4 hover:bg-ink-line/20 transition-colors focus-ring"
+              >
+                <div class="flex items-center gap-4 min-w-0">
+                  <span
+                    class="w-2.5 h-2.5 rounded-full bg-signal-amber shrink-0"
+                  ></span>
+                  <div class="min-w-0">
+                    <p class="font-medium truncate">HR / Behavioral · Easy</p>
+                    <p class="text-xs text-slate-muted font-mono mt-0.5">
+                      Yesterday, 6:15 PM · 5 questions
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6 shrink-0">
+                  <span class="font-mono text-signal-amber text-sm"
+                    >69/100</span
+                  >
+                  <span class="text-slate-muted" aria-hidden="true">→</span>
+                </div>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center justify-between px-6 py-4 hover:bg-ink-line/20 transition-colors focus-ring"
+              >
+                <div class="flex items-center gap-4 min-w-0">
+                  <span
+                    class="w-2.5 h-2.5 rounded-full bg-indigo shrink-0"
+                  ></span>
+                  <div class="min-w-0">
+                    <p class="font-medium truncate">System Design · Hard</p>
+                    <p class="text-xs text-slate-muted font-mono mt-0.5">
+                      3 days ago · 4 questions
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6 shrink-0">
+                  <span class="font-mono text-paper text-sm">74/100</span>
+                  <span class="text-slate-muted" aria-hidden="true">→</span>
+                </div>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center justify-between px-6 py-4 hover:bg-ink-line/20 transition-colors focus-ring"
+              >
+                <div class="flex items-center gap-4 min-w-0">
+                  <span
+                    class="w-2.5 h-2.5 rounded-full bg-signal-red shrink-0"
+                  ></span>
+                  <div class="min-w-0">
+                    <p class="font-medium truncate">
+                      Backend Development · Medium
+                    </p>
+                    <p class="text-xs text-slate-muted font-mono mt-0.5">
+                      6 days ago · 6 questions
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6 shrink-0">
+                  <span class="font-mono text-signal-red text-sm">61/100</span>
+                  <span class="text-slate-muted" aria-hidden="true">→</span>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- ===== RECOMMENDED RESOURCES ===== -->
+          <section>
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="font-medium">Recommended for your gaps</h2>
+              <a
+                href="#"
+                class="text-sm text-slate-muted hover:text-paper transition-colors focus-ring rounded"
+                >See all resources →</a
+              >
+            </div>
+            <div class="grid sm:grid-cols-3 gap-5">
+              <div
+                class="rounded-2xl border border-ink-line bg-ink-soft/40 overflow-hidden hover:border-indigo/60 transition-colors"
+              >
+                <div
+                  class="aspect-video bg-ink-line flex items-center justify-center text-slate-muted"
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M14.752 11.168l-6.518-3.76A1 1 0 007 8.24v7.52a1 1 0 001.234.972l6.518-1.76a1 1 0 00.748-.972V12.14a1 1 0 00-.748-.972z"
+                    />
+                    <circle cx="12" cy="12" r="9" stroke-width="1.8" />
+                  </svg>
+                </div>
+                <div class="p-4">
+                  <span class="text-xs font-mono text-signal-amber"
+                    >Backend Development</span
+                  >
+                  <p class="font-medium text-sm mt-1.5">
+                    Designing REST APIs that scale
+                  </p>
+                </div>
+              </div>
+              <div
+                class="rounded-2xl border border-ink-line bg-ink-soft/40 overflow-hidden hover:border-indigo/60 transition-colors"
+              >
+                <div
+                  class="aspect-video bg-ink-line flex items-center justify-center text-slate-muted"
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M14.752 11.168l-6.518-3.76A1 1 0 007 8.24v7.52a1 1 0 001.234.972l6.518-1.76a1 1 0 00.748-.972V12.14a1 1 0 00-.748-.972z"
+                    />
+                    <circle cx="12" cy="12" r="9" stroke-width="1.8" />
+                  </svg>
+                </div>
+                <div class="p-4">
+                  <span class="text-xs font-mono text-signal-amber"
+                    >HR / Behavioral</span
+                  >
+                  <p class="font-medium text-sm mt-1.5">
+                    Answering "tell me about yourself" well
+                  </p>
+                </div>
+              </div>
+              <div
+                class="rounded-2xl border border-ink-line bg-ink-soft/40 overflow-hidden hover:border-indigo/60 transition-colors"
+              >
+                <div
+                  class="aspect-video bg-ink-line flex items-center justify-center text-slate-muted"
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    />
+                  </svg>
+                </div>
+                <div class="p-4">
+                  <span class="text-xs font-mono text-signal-amber"
+                    >Article</span
+                  >
+                  <p class="font-medium text-sm mt-1.5">
+                    How to quantify impact in answers
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

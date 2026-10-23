@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock Interview — InterviewIQ</title>
+<meta name="description" content="Live AI mock interview session with real-time scored feedback.">
+
+<!-- Tailwind CSS (CDN build, for prototyping/demo purposes) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: {
+            DEFAULT: '#14161F',
+            soft: '#1B1E2B',
+            line: '#2A2E40',
+          },
+          paper: '#F6F4EF',
+          indigo: {
+            DEFAULT: '#5B5FEF',
+            dim: '#4347C4',
+          },
+          signal: {
+            green: '#34D399',
+            amber: '#FBBF24',
+            red: '#F87171',
+          },
+          slate: {
+            muted: '#9297AC',
+          }
+        },
+        fontFamily: {
+          display: ['"Instrument Serif"', 'serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['"IBM Plex Mono"', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  body { background-color: #14161F; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+  .focus-ring:focus-visible {
+    outline: 2px solid #5B5FEF;
+    outline-offset: 3px;
+  }
+  .nav-link.active {
+    background-color: rgba(91,95,239,0.14);
+    color: #F6F4EF;
+  }
+  .nav-link.active .nav-dot { opacity: 1; }
+  textarea {
+    background-color: #1B1E2B;
+    border: 1px solid #2A2E40;
+    color: #F6F4EF;
+  }
+  textarea::placeholder { color: #9297AC; }
+  textarea:focus {
+    outline: none;
+    border-color: #5B5FEF;
+    box-shadow: 0 0 0 3px rgba(91,95,239,0.18);
+  }
+  .annot-underline {
+    background-image: linear-gradient(to right, currentColor 60%, transparent 0%);
+    background-position: bottom;
+    background-repeat: repeat-x;
+    background-size: 6px 2px;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+  }
+  .rec-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+</style>
+</head>
+
+<body class="bg-ink text-paper font-body antialiased min-h-screen">
+
+  <div class="flex min-h-screen">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="hidden lg:flex w-64 shrink-0 flex-col border-r border-ink-line bg-ink-soft/40">
+      <a href="index.html" class="flex items-center gap-2 px-6 h-16 border-b border-ink-line focus-ring">
+        <span class="w-7 h-7 rounded-md bg-indigo flex items-center justify-center">
+          <span class="w-2 h-2 rounded-full bg-signal-green"></span>
+        </span>
+        <span class="font-semibold tracking-tight text-lg">InterviewIQ</span>
+      </a>
+
+      <nav class="flex-1 px-4 py-6 space-y-1 text-sm">
+        <a href="dashboard.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"></span>
+          Dashboard
+        </a>
+        <a href="interview.html" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-paper transition-colors focus-ring">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-100"></span>
+          Mock interview
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"></span>
+          Interview history
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"></span>
+          Community
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"></span>
+          Learning resources
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-muted hover:text-paper hover:bg-ink-line/40 transition-colors focus-ring">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full bg-indigo opacity-0 transition-opacity"></span>
+          Profile
+        </a>
+      </nav>
+
+      <div class="px-4 py-5 border-t border-ink-line">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-ink-line/40 transition-colors focus-ring">
+          <div class="w-8 h-8 rounded-full bg-indigo/30 shrink-0"></div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium truncate">Ayesha Rahman</p>
+            <p class="text-xs text-slate-muted font-mono truncate">ayesha_r</p>
+          </div>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <div class="flex-1 min-w-0">
+
+      <!-- Topbar: session meta + progress -->
+      <header class="sticky top-0 z-30 bg-ink/90 backdrop-blur border-b border-ink-line">
+        <div class="px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="flex items-center gap-1.5 text-xs font-mono text-signal-red shrink-0">
+              <span class="rec-dot w-2 h-2 rounded-full bg-signal-red"></span> LIVE
+            </span>
+            <span class="text-slate-muted shrink-0">·</span>
+            <p class="text-sm font-medium truncate">Frontend Development <span class="text-slate-muted font-normal">· Medium</span></p>
+          </div>
+          <div class="flex items-center gap-4 shrink-0">
+            <span class="font-mono text-sm text-slate-muted">04:12</span>
+            <a href="dashboard.html" class="text-sm text-slate-muted hover:text-paper transition-colors focus-ring rounded">End session</a>
+          </div>
+        </div>
+
+        <!-- question progress dots -->
+        <div class="px-6 lg:px-10 pb-4 flex items-center gap-2">
+          <span class="h-1.5 flex-1 rounded-full bg-signal-green"></span>
+          <span class="h-1.5 flex-1 rounded-full bg-signal-green"></span>
+          <span class="h-1.5 flex-1 rounded-full bg-indigo"></span>
+          <span class="h-1.5 flex-1 rounded-full bg-ink-line"></span>
+          <span class="h-1.5 flex-1 rounded-full bg-ink-line"></span>
+          <span class="h-1.5 flex-1 rounded-full bg-ink-line"></span>
+        </div>
+      </header>
+
+      <main class="px-6 lg:px-10 py-10 max-w-4xl mx-auto space-y-8">
+
+        <p class="font-mono text-xs tracking-[0.2em] text-signal-green uppercase">Question 3 of 6</p>
+
+        <!-- ===== QUESTION ===== -->
+        <section class="rounded-2xl border border-ink-line bg-ink-soft/40 p-7">
+          <p class="text-xs font-mono text-slate-muted mb-3">INTERVIEWER</p>
+          <h1 class="font-display text-3xl leading-snug">
+            "Tell me about a time you had to optimize a slow-loading page. What did you do?"
+          </h1>
+        </section>
+
+        <!-- ===== ANSWER ===== -->
+        <section class="rounded-2xl border border-ink-line bg-ink-soft/40 p-7">
+          <div class="flex items-center justify-between mb-3">
+            <label for="answer" class="text-xs font-mono text-slate-muted">YOUR ANSWER</label>
+            <div class="flex items-center gap-1 text-xs bg-ink rounded-full p-1 border border-ink-line">
+              <button type="button" class="px-3 py-1 rounded-full bg-indigo text-white focus-ring">Type</button>
+              <button type="button" class="px-3 py-1 rounded-full text-slate-muted hover:text-paper transition-colors focus-ring">Speak</button>
+            </div>
+          </div>
+          <textarea id="answer" rows="6" placeholder="Start typing your answer…"
+            class="w-full rounded-lg px-4 py-3.5 text-sm leading-relaxed resize-none focus-ring">In my last group project the dashboard was taking almost 6 seconds to load, so I profiled it and found unused JS bundles. I split the code and lazy-loaded charts, which helped a lot.</textarea>
+          <div class="flex items-center justify-between mt-4">
+            <p class="text-xs text-slate-muted font-mono">42 words</p>
+            <button type="button" class="inline-flex items-center gap-2 bg-indigo hover:bg-indigo-dim transition-colors text-white text-sm font-medium px-6 py-3 rounded-full focus-ring">
+              Submit answer
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===== AI FEEDBACK (shown once evaluated) ===== -->
+        <section class="rounded-2xl border border-indigo/50 bg-ink-soft/60 p-7">
+          <div class="flex items-center justify-between mb-6">
+            <p class="text-xs font-mono text-indigo tracking-[0.2em] uppercase">AI feedback</p>
+            <span class="font-display text-3xl">78<span class="text-slate-muted text-base font-body">/100</span></span>
+          </div>
+
+          <p class="text-paper/90 leading-relaxed mb-6">
+            In my last group project the dashboard was
+            <span class="annot-underline text-signal-green">taking almost 6 seconds to load</span>,
+            so I profiled it and found unused JS bundles. I
+            <span class="annot-underline text-signal-amber">split the code and lazy-loaded charts</span>,
+            which helped a lot.
+          </p>
+
+          <div class="grid sm:grid-cols-2 gap-6 mb-6">
+            <div>
+              <p class="text-xs font-mono text-signal-green mb-3">STRENGTHS</p>
+              <ul class="space-y-2 text-sm text-slate-muted">
+                <li class="flex gap-2"><span class="text-signal-green">✓</span> Gave a concrete starting metric (6s load time)</li>
+                <li class="flex gap-2"><span class="text-signal-green">✓</span> Named a specific, relevant technique (code splitting)</li>
+              </ul>
+            </div>
+            <div>
+              <p class="text-xs font-mono text-signal-amber mb-3">IMPROVE</p>
+              <ul class="space-y-2 text-sm text-slate-muted">
+                <li class="flex gap-2"><span class="text-signal-amber">△</span> Quantify the outcome — what did load time become?</li>
+                <li class="flex gap-2"><span class="text-signal-amber">△</span> Mention how you verified the improvement</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="border-t border-ink-line pt-5">
+            <p class="text-xs font-mono text-slate-muted mb-2">SUGGESTED ANSWER</p>
+            <p class="text-sm text-slate-muted leading-relaxed">
+              "…I profiled the page with Lighthouse, found unused JS bundles, and split the code
+              so charts loaded lazily. That took load time from 6s down to 1.8s, which I confirmed
+              with a follow-up Lighthouse run."
+            </p>
+          </div>
+
+          <div class="flex justify-end mt-6">
+            <a href="#" class="inline-flex items-center gap-2 text-sm font-medium text-paper hover:text-indigo transition-colors focus-ring rounded px-2 py-1">
+              Next question
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+</html>
