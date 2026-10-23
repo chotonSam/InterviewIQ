@@ -1,0 +1,110 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="InterviewIQ ER Diagram" id="erd1">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- CATEGORY -->
+        <mxCell id="category" value="&lt;b&gt;CATEGORY&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;name&lt;br&gt;description" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="220" height="94" as="geometry" />
+        </mxCell>
+
+        <!-- USERS -->
+        <mxCell id="users" value="&lt;b&gt;USERS&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;fullName&lt;br&gt;username&lt;br&gt;email&lt;br&gt;passwordHash&lt;br&gt;phone&lt;br&gt;isVerified&lt;br&gt;profilePicture&lt;br&gt;role&lt;br&gt;resumeUrl&lt;br&gt;resumeUploadedAt&lt;br&gt;createdAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="220" height="256" as="geometry" />
+        </mxCell>
+
+        <!-- INTERVIEWS -->
+        <mxCell id="interviews" value="&lt;b&gt;INTERVIEWS&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK userId&lt;br&gt;FK categoryId&lt;br&gt;difficulty&lt;br&gt;createdAt&lt;br&gt;score" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="220" height="148" as="geometry" />
+        </mxCell>
+
+        <!-- QUESTIONS -->
+        <mxCell id="questions" value="&lt;b&gt;QUESTIONS&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK interviewId&lt;br&gt;text" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="40" width="220" height="94" as="geometry" />
+        </mxCell>
+
+        <!-- ANSWERS -->
+        <mxCell id="answers" value="&lt;b&gt;ANSWERS&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK questionId&lt;br&gt;responseText" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="40" width="220" height="94" as="geometry" />
+        </mxCell>
+
+        <!-- FEEDBACK -->
+        <mxCell id="feedback" value="&lt;b&gt;FEEDBACK&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK answerId&lt;br&gt;score&lt;br&gt;strengths&lt;br&gt;weaknesses&lt;br&gt;suggestedAnswer" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="40" width="220" height="148" as="geometry" />
+        </mxCell>
+
+        <!-- POSTS -->
+        <mxCell id="posts" value="&lt;b&gt;POSTS&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK userId&lt;br&gt;content&lt;br&gt;createdAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="340" y="320" width="220" height="112" as="geometry" />
+        </mxCell>
+
+        <!-- COMMENTS -->
+        <mxCell id="comments" value="&lt;b&gt;COMMENTS&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK postId&lt;br&gt;FK userId&lt;br&gt;content" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="320" width="220" height="112" as="geometry" />
+        </mxCell>
+
+        <!-- LIKES -->
+        <mxCell id="likes" value="&lt;b&gt;LIKES&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK userId&lt;br&gt;FK postId" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="320" width="220" height="94" as="geometry" />
+        </mxCell>
+
+        <!-- RATINGS -->
+        <mxCell id="ratings" value="&lt;b&gt;RATINGS&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;FK userId&lt;br&gt;FK resourceId&lt;br&gt;value" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="340" y="520" width="220" height="112" as="geometry" />
+        </mxCell>
+
+        <!-- LEARNING_RESOURCES -->
+        <mxCell id="resources" value="&lt;b&gt;LEARNING_RESOURCES&lt;/b&gt;&lt;br&gt;PK id&lt;br&gt;title&lt;br&gt;type&lt;br&gt;url" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="520" width="220" height="112" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES: Category -->
+        <mxCell id="e0" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="category" target="interviews">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES: Interview flow -->
+        <mxCell id="e1" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="users" target="interviews">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="interviews" target="questions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="1:1" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERone;fontSize=11;" edge="1" parent="1" source="questions" target="answers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="1:1" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERone;fontSize=11;" edge="1" parent="1" source="answers" target="feedback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES: Community -->
+        <mxCell id="e5" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="users" target="posts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="posts" target="comments">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="users" target="comments">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="users" target="likes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="posts" target="likes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES: Resources -->
+        <mxCell id="e10" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="users" target="ratings">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;endArrow=ERmany;fontSize=11;" edge="1" parent="1" source="resources" target="ratings">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
