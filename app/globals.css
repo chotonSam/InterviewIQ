@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer components {
+  .focus-ring:focus-visible {
+    outline: 2px solid #5B5FEF;
+    outline-offset: 3px;
+  }
+
+  /* Dashed underline used for AI annotations on answers */
+  .annot-underline {
+    background-image: linear-gradient(to right, currentColor 60%, transparent 0%);
+    background-position: bottom;
+    background-repeat: repeat-x;
+    background-size: 6px 2px;
+  }
+
+  /* Shared form control look */
+  .field {
+    @apply w-full rounded-lg border border-ink-line bg-ink-soft px-4 py-3 text-sm text-paper placeholder:text-slate-muted;
+  }
+  .field:focus {
+    outline: none;
+    border-color: #5B5FEF;
+    box-shadow: 0 0 0 3px rgba(91, 95, 239, 0.18);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-indigo font-medium text-white transition-colors hover:bg-indigo-dim focus-ring;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.rec-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
