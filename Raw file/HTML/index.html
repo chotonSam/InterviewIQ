@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InterviewIQ — Practice interviews with AI feedback</title>
+    <meta
+      name="description"
+      content="InterviewIQ helps you rehearse real interview questions and get instant AI-scored feedback on every answer."
+    />
+
+    <!-- Tailwind CSS (CDN build, for prototyping/demo purposes) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: {
+                DEFAULT: "#14161F",
+                soft: "#1B1E2B",
+                line: "#2A2E40",
+              },
+              paper: "#F6F4EF",
+              indigo: {
+                DEFAULT: "#5B5FEF",
+                dim: "#4347C4",
+              },
+              signal: {
+                green: "#34D399",
+                amber: "#FBBF24",
+              },
+              slate: {
+                muted: "#9297AC",
+              },
+            },
+            fontFamily: {
+              display: ['"Instrument Serif"', "serif"],
+              body: ["Inter", "sans-serif"],
+              mono: ['"IBM Plex Mono"', "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background-color: #14161f;
+      }
+      .annot-underline {
+        background-image: linear-gradient(
+          to right,
+          currentColor 60%,
+          transparent 0%
+        );
+        background-position: bottom;
+        background-repeat: repeat-x;
+        background-size: 6px 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+      .focus-ring:focus-visible {
+        outline: 2px solid #5b5fef;
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-ink text-paper font-body antialiased">
+    <!-- ============ NAV ============ -->
+    <header
+      class="sticky top-0 z-50 border-b border-ink-line/70 bg-ink/85 backdrop-blur"
+    >
+      <div
+        class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-16"
+      >
+        <a href="#" class="flex items-center gap-2 focus-ring rounded">
+          <span
+            class="w-7 h-7 rounded-md bg-indigo flex items-center justify-center"
+          >
+            <span class="w-2 h-2 rounded-full bg-signal-green"></span>
+          </span>
+          <span class="font-semibold tracking-tight text-lg">InterviewIQ</span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8 text-sm text-slate-muted">
+          <a
+            href="#how-it-works"
+            class="hover:text-paper transition-colors focus-ring rounded"
+            >How it works</a
+          >
+          <a
+            href="#features"
+            class="hover:text-paper transition-colors focus-ring rounded"
+            >Features</a
+          >
+          <a
+            href="#community"
+            class="hover:text-paper transition-colors focus-ring rounded"
+            >Community</a
+          >
+          <a
+            href="#resources"
+            class="hover:text-paper transition-colors focus-ring rounded"
+            >Resources</a
+          >
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a
+            href="auth.html"
+            class="hidden sm:inline-block text-sm text-slate-muted hover:text-paper transition-colors focus-ring rounded px-2 py-2"
+            >Log in</a
+          >
+          <a
+            href="#"
+            class="text-sm font-medium bg-paper text-ink px-4 py-2 rounded-full hover:bg-white transition-colors focus-ring"
+          >
+            Start free
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ HERO ============ -->
+    <section class="relative overflow-hidden">
+      <div
+        class="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-24 grid lg:grid-cols-2 gap-16 items-center"
+      >
+        <!-- Left: headline -->
+        <div>
+          <p
+            class="font-mono text-xs tracking-[0.2em] text-signal-green uppercase mb-6"
+          >
+            AI mock interviews
+          </p>
+          <h1 class="font-display text-5xl sm:text-6xl leading-[1.05] mb-6">
+            Walk into the real one
+            <br />
+            having already had it.
+          </h1>
+          <p class="text-slate-muted text-lg leading-relaxed max-w-md mb-9">
+            Pick a role and difficulty, answer real interview questions out loud
+            or in writing, and get scored feedback — strengths, gaps, and a
+            better answer — in seconds.
+          </p>
+          <div class="flex flex-wrap items-center gap-4">
+            <a
+              href="interview.html"
+              class="inline-flex items-center gap-2 bg-indigo hover:bg-indigo-dim transition-colors text-white font-medium px-6 py-3.5 rounded-full focus-ring"
+            >
+              Start a mock interview
+              <span aria-hidden="true">→</span>
+            </a>
+            <a
+              href="#how-it-works"
+              class="inline-flex items-center gap-2 text-paper/90 hover:text-paper font-medium px-2 py-3.5 focus-ring rounded"
+            >
+              See how it works
+            </a>
+          </div>
+
+          <dl class="flex gap-10 mt-14 font-mono text-sm">
+            <div>
+              <dt class="text-slate-muted">Mock interviews run</dt>
+              <dd class="text-2xl text-paper mt-1">12,400+</dd>
+            </div>
+            <div>
+              <dt class="text-slate-muted">Avg. score lift</dt>
+              <dd class="text-2xl text-signal-green mt-1">+22%</dd>
+            </div>
+            <div>
+              <dt class="text-slate-muted">Question categories</dt>
+              <dd class="text-2xl text-paper mt-1">18</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Right: annotated transcript mockup (signature element) -->
+        <div class="relative">
+          <div
+            class="absolute -inset-6 bg-indigo/10 blur-3xl rounded-full"
+          ></div>
+          <div
+            class="relative bg-ink-soft border border-ink-line rounded-2xl shadow-2xl shadow-black/40 overflow-hidden"
+          >
+            <div
+              class="flex items-center justify-between px-5 py-4 border-b border-ink-line"
+            >
+              <div
+                class="flex items-center gap-2 text-xs text-slate-muted font-mono"
+              >
+                <span class="w-2 h-2 rounded-full bg-signal-amber"></span>
+                Frontend Development · Medium
+              </div>
+              <span class="text-xs font-mono text-slate-muted">Q3 of 6</span>
+            </div>
+
+            <div class="p-6 space-y-5">
+              <div>
+                <p class="text-xs font-mono text-slate-muted mb-2">
+                  INTERVIEWER
+                </p>
+                <p class="text-paper/90 leading-relaxed">
+                  "Tell me about a time you had to optimize a slow-loading page.
+                  What did you do?"
+                </p>
+              </div>
+
+              <div class="border-t border-ink-line pt-5">
+                <p class="text-xs font-mono text-slate-muted mb-2">
+                  YOUR ANSWER
+                </p>
+                <p class="text-paper/90 leading-relaxed">
+                  In my last group project the dashboard was
+                  <span class="annot-underline text-signal-green"
+                    >taking almost 6 seconds to load</span
+                  >, so I profiled it and found unused JS bundles. I
+                  <span class="annot-underline text-signal-amber"
+                    >split the code and lazy-loaded charts</span
+                  >, which helped a lot.
+                </p>
+
+                <div class="mt-4 space-y-2">
+                  <div class="flex items-start gap-2 text-xs">
+                    <span
+                      class="mt-0.5 px-1.5 py-0.5 rounded bg-signal-green/15 text-signal-green font-mono"
+                      >✓ strong</span
+                    >
+                    <span class="text-slate-muted"
+                      >Concrete starting metric — good.</span
+                    >
+                  </div>
+                  <div class="flex items-start gap-2 text-xs">
+                    <span
+                      class="mt-0.5 px-1.5 py-0.5 rounded bg-signal-amber/15 text-signal-amber font-mono"
+                      >△ add detail</span
+                    >
+                    <span class="text-slate-muted"
+                      >Quantify the result: what did load time become?</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="border-t border-ink-line pt-4 flex items-center justify-between"
+              >
+                <span class="text-xs text-slate-muted font-mono">AI score</span>
+                <span class="font-display text-3xl text-paper"
+                  >78<span class="text-slate-muted text-base font-body"
+                    >/100</span
+                  ></span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section id="how-it-works" class="border-t border-ink-line">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24">
+        <p
+          class="font-mono text-xs tracking-[0.2em] text-signal-green uppercase mb-4"
+        >
+          The process
+        </p>
+        <h2 class="font-display text-4xl mb-16 max-w-lg">
+          Three steps, every time you practice.
+        </h2>
+
+        <div
+          class="grid md:grid-cols-3 gap-px bg-ink-line rounded-2xl overflow-hidden"
+        >
+          <div class="bg-ink p-8">
+            <span class="font-mono text-sm text-slate-muted">01</span>
+            <h3 class="font-display text-2xl mt-4 mb-3">Choose your setup</h3>
+            <p class="text-slate-muted leading-relaxed text-sm">
+              Pick a category — frontend, backend, HR, system design — and a
+              difficulty that matches where you're at.
+            </p>
+          </div>
+          <div class="bg-ink p-8">
+            <span class="font-mono text-sm text-slate-muted">02</span>
+            <h3 class="font-display text-2xl mt-4 mb-3">
+              Answer real questions
+            </h3>
+            <p class="text-slate-muted leading-relaxed text-sm">
+              AI generates questions on the spot and runs the session like an
+              actual interviewer, not a static quiz.
+            </p>
+          </div>
+          <div class="bg-ink p-8">
+            <span class="font-mono text-sm text-slate-muted">03</span>
+            <h3 class="font-display text-2xl mt-4 mb-3">Get scored feedback</h3>
+            <p class="text-slate-muted leading-relaxed text-sm">
+              See your score, strengths, weak spots, and a stronger version of
+              your answer — saved to your history.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section id="features" class="border-t border-ink-line bg-ink-soft/40">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24">
+        <p
+          class="font-mono text-xs tracking-[0.2em] text-signal-green uppercase mb-4"
+        >
+          What's inside
+        </p>
+        <h2 class="font-display text-4xl mb-16 max-w-lg">
+          Everything around the interview, too.
+        </h2>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div
+            class="rounded-2xl border border-ink-line p-6 hover:border-indigo/60 transition-colors"
+          >
+            <div
+              class="w-9 h-9 rounded-lg bg-indigo/15 flex items-center justify-center mb-5 text-indigo"
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold mb-2">AI evaluation</h3>
+            <p class="text-slate-muted text-sm leading-relaxed">
+              Score, strengths, weaknesses, and a suggested better answer for
+              every response.
+            </p>
+          </div>
+
+          <div
+            class="rounded-2xl border border-ink-line p-6 hover:border-indigo/60 transition-colors"
+          >
+            <div
+              class="w-9 h-9 rounded-lg bg-indigo/15 flex items-center justify-center mb-5 text-indigo"
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold mb-2">Progress dashboard</h3>
+            <p class="text-slate-muted text-sm leading-relaxed">
+              Track past interviews, scores, and feedback so you can see
+              yourself improve.
+            </p>
+          </div>
+
+          <div
+            class="rounded-2xl border border-ink-line p-6 hover:border-indigo/60 transition-colors"
+          >
+            <div
+              class="w-9 h-9 rounded-lg bg-indigo/15 flex items-center justify-center mb-5 text-indigo"
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l1.586-1.586z"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold mb-2">Community</h3>
+            <p class="text-slate-muted text-sm leading-relaxed">
+              Share your experience, ask questions, and comment on other
+              candidates' posts.
+            </p>
+          </div>
+
+          <div
+            class="rounded-2xl border border-ink-line p-6 hover:border-indigo/60 transition-colors"
+          >
+            <div
+              class="w-9 h-9 rounded-lg bg-indigo/15 flex items-center justify-center mb-5 text-indigo"
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold mb-2">Learning resources</h3>
+            <p class="text-slate-muted text-sm leading-relaxed">
+              Curated videos and articles to fill the gaps your feedback points
+              to.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COMMUNITY PREVIEW ============ -->
+    <section id="community" class="border-t border-ink-line">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24">
+        <div class="flex items-end justify-between mb-12">
+          <div>
+            <p
+              class="font-mono text-xs tracking-[0.2em] text-signal-green uppercase mb-4"
+            >
+              From the community
+            </p>
+            <h2 class="font-display text-4xl max-w-lg">
+              Other candidates, sharing what worked.
+            </h2>
+          </div>
+          <a
+            href="#"
+            class="hidden sm:inline-block text-sm text-slate-muted hover:text-paper transition-colors focus-ring rounded"
+            >Browse all posts →</a
+          >
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <article
+            class="rounded-2xl border border-ink-line p-6 bg-ink-soft/40"
+          >
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-full bg-indigo/30"></div>
+              <div>
+                <p class="text-sm font-medium">Farhan T.</p>
+                <p class="text-xs text-slate-muted font-mono">3 days ago</p>
+              </div>
+            </div>
+            <h3 class="font-medium mb-2">
+              What actually helped my system design round
+            </h3>
+            <p class="text-slate-muted text-sm leading-relaxed mb-4">
+              Practiced with the "hard" difficulty three times before my real
+              interview — the feedback on trade-offs was the part that stuck.
+            </p>
+            <div
+              class="flex items-center gap-4 text-xs text-slate-muted font-mono"
+            >
+              <span class="flex items-center gap-1">♥ 42</span>
+              <span class="flex items-center gap-1">💬 11</span>
+            </div>
+          </article>
+
+          <article
+            class="rounded-2xl border border-ink-line p-6 bg-ink-soft/40"
+          >
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-full bg-signal-green/30"></div>
+              <div>
+                <p class="text-sm font-medium">Nusrat A.</p>
+                <p class="text-xs text-slate-muted font-mono">1 week ago</p>
+              </div>
+            </div>
+            <h3 class="font-medium mb-2">HR round questions I keep seeing</h3>
+            <p class="text-slate-muted text-sm leading-relaxed mb-4">
+              Sharing the 6 questions that came up in every mock HR round this
+              month, plus what the AI flagged in my answers.
+            </p>
+            <div
+              class="flex items-center gap-4 text-xs text-slate-muted font-mono"
+            >
+              <span class="flex items-center gap-1">♥ 67</span>
+              <span class="flex items-center gap-1">💬 23</span>
+            </div>
+          </article>
+
+          <article
+            class="rounded-2xl border border-ink-line p-6 bg-ink-soft/40"
+          >
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-full bg-signal-amber/30"></div>
+              <div>
+                <p class="text-sm font-medium">Rakib H.</p>
+                <p class="text-xs text-slate-muted font-mono">2 weeks ago</p>
+              </div>
+            </div>
+            <h3 class="font-medium mb-2">Went from 61 to 88 in two weeks</h3>
+            <p class="text-slate-muted text-sm leading-relaxed mb-4">
+              Logging the resources that closed my biggest gap — mostly the
+              "quantify impact" note I kept getting.
+            </p>
+            <div
+              class="flex items-center gap-4 text-xs text-slate-muted font-mono"
+            >
+              <span class="flex items-center gap-1">♥ 89</span>
+              <span class="flex items-center gap-1">💬 34</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA BAND ============ -->
+    <section class="border-t border-ink-line">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24 text-center">
+        <h2 class="font-display text-4xl sm:text-5xl max-w-2xl mx-auto mb-8">
+          Your next interview doesn't have to be the first time you've answered
+          these questions.
+        </h2>
+        <a
+          href="#"
+          class="inline-flex items-center gap-2 bg-indigo hover:bg-indigo-dim transition-colors text-white font-medium px-7 py-4 rounded-full focus-ring"
+        >
+          Start your first mock interview
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer id="resources" class="border-t border-ink-line">
+      <div
+        class="max-w-7xl mx-auto px-6 lg:px-10 py-14 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+      >
+        <div class="flex items-center gap-2">
+          <span
+            class="w-6 h-6 rounded-md bg-indigo flex items-center justify-center"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-signal-green"></span>
+          </span>
+          <span class="font-semibold">InterviewIQ</span>
+          <span class="text-slate-muted text-sm ml-2"
+            >— University Web Technology Project</span
+          >
+        </div>
+        <div class="flex gap-8 text-sm text-slate-muted font-mono">
+          <a
+            href="#how-it-works"
+            class="hover:text-paper transition-colors focus-ring rounded"
+            >How it works</a
+          >
+          <a
+            href="#features"
+            class="hover:text-paper transition-colors focus-ring rounded"
+            >Features</a
+          >
+          <a
+            href="#community"
+            class="hover:text-paper transition-colors focus-ring rounded"
+            >Community</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
