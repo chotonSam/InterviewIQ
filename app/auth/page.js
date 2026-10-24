@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSessionUserId } from "@/lib/session";
 import Logo from "@/components/Logo";
 import AuthTabs from "@/components/auth/AuthTabs";
 import AuthSidePanel from "@/components/auth/AuthSidePanel";
@@ -7,7 +9,9 @@ export const metadata = {
   title: "Log in or create an account — InterviewIQ",
 };
 
-export default function AuthPage() {
+export default async function AuthPage() {
+  if (await getSessionUserId()) redirect("/dashboard");
+
   return (
     <div className="min-h-screen">
       <header className="border-b border-ink-line/70">

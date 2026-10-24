@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview.
 
 ## Run it
 
@@ -44,14 +44,42 @@ components/
 lib/data.js            Mock data (replaced by API/MongoDB in the backend step)
 ```
 
-## What is real vs. mocked right now
+## Setup (backend)
 
-- Real: routing, layouts, reusable components, responsive UI, tabs, word count, timer, question progress, "evaluating → feedback" flow.
-- Mocked (backend step): login/register submit, username availability (`AuthTabs.js`, fake taken list), AI evaluation (`lib/data.js → mockFeedback`), all dashboard numbers.
+1. `npm install`
+2. Make sure `.env.local` exists (copy `.env.example` and fill it in). Needs `MONGODB_URI`, `GEMINI_API_KEY`, `AUTH_SECRET`.
+3. In MongoDB Atlas → **Network Access**, allow your IP (for development you can use `0.0.0.0/0`).
+4. `npm run dev`
 
-## Next steps (backend)
+## What's real vs. mocked
 
-1. MongoDB + Mongoose models (User, Category, Interview, Question, Answer, Feedback, Post, Comment, Like, Resource, Rating)
-2. Auth.js session login/logout + `/api/users/check-username`
-3. `/api/interviews` routes + Gemini integration (server-side only; copy `.env.example` → `.env.local`)
-4. Community (posts, comments, likes) and Learning Resources pages
+Real (MongoDB + Gemini):
+- Register / login / logout with a signed httpOnly session cookie (bcrypt-hashed passwords)
+- Live username check (`/api/users/check-username`)
+- Create interview: category + difficulty → Gemini generates 6 questions (server-side)
+- Submit answer: Gemini scores it → saved as Answer + Feedback; interview score = average
+- Dashboard: stats, streak, trend, per-category scores, recent interviews (from your real data)
+- Reopen any past interview from the dashboard to review answers and feedback
+
+Still mock: Community page (posts/likes/comments), recommended resources, landing page numbers.
+
+## API routes
+
+| Method | Route                              | Purpose                          |
+| ------ | ---------------------------------- | -------------------------------- |
+| POST   | `/api/auth/register`               | Create account + session         |
+| POST   | `/api/auth/login`                  | Log in                           |
+| POST   | `/api/auth/logout`                 | Log out                          |
+| GET    | `/api/users/check-username?u=`     | Username availability            |
+| POST   | `/api/interviews`                  | Create interview (AI questions)  |
+| POST   | `/api/interviews/:id/answers`      | Submit answer (AI evaluation)    |
+
+## Data model (ERD)
+
+USER 1—* INTERVIEW 1—* QUESTION 1—1 ANSWER 1—1 FEEDBACK, and CATEGORY 1—* INTERVIEW (`lib/models/`).
+
+## Next steps
+
+1. Community backend (posts, comments, likes, real-time comments)
+2. Learning resources (YouTube embeds + rating)
+3. Profile page + picture upload (Cloudinary)
