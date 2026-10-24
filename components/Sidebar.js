@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 
 const nav = [
@@ -13,8 +13,15 @@ const nav = [
   { href: "#", label: "Profile" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ user }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/auth");
+    router.refresh();
+  }
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-r border-ink-line bg-ink-soft/40 lg:flex">
@@ -40,13 +47,22 @@ export default function Sidebar() {
       </nav>
 
       <div className="border-t border-ink-line px-4 py-5">
-        <a href="#" className="focus-ring flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-ink-line/40">
-          <div className="h-8 w-8 shrink-0 rounded-full bg-indigo/30" />
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">Ayesha Rahman</p>
-            <p className="truncate font-mono text-xs text-slate-muted">ayesha_r</p>
+        <div className="flex items-center gap-3 px-3 py-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo/30 text-xs font-medium">
+            {user.name.slice(0, 1).toUpperCase()}
           </div>
-        </a>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">{user.name}</p>
+            <p className="truncate font-mono text-xs text-slate-muted">{user.username}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={logout}
+          className="focus-ring mt-2 w-full rounded-lg px-3 py-2 text-left text-sm text-slate-muted transition-colors hover:bg-ink-line/40 hover:text-paper"
+        >
+          Log out
+        </button>
       </div>
     </aside>
   );

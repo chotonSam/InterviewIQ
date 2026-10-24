@@ -1,10 +1,17 @@
+import { redirect } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import { getCurrentUser } from "@/lib/session";
 
-// Shared shell for all logged-in pages (dashboard, interview, and later: history, community, resources, profile)
-export default function AppLayout({ children }) {
+export const dynamic = "force-dynamic"; // always reads the session + database
+
+// Shared shell for all logged-in pages
+export default async function AppLayout({ children }) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/auth");
+
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      <Sidebar user={user} />
       <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
