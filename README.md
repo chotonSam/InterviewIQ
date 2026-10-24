@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-This is **Step 2**: the HTML/Tailwind designs converted into a Next.js (App Router) project.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page.
 
 ## Run it
 
@@ -22,6 +22,7 @@ Open http://localhost:3000
 | `/auth`      | Log in / Create account (with live username check demo) |
 | `/dashboard` | Stats, score trend, category breakdown, history        |
 | `/interview` | Interactive mock interview session + AI feedback panel |
+| `/community` | Posts, like toggle, expandable comments, pagination    |
 
 ## Project structure
 
