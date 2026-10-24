@@ -31,7 +31,8 @@ export async function POST(req) {
       questions = await generateQuestions({ category: category.name, difficulty, count: QUESTION_COUNT });
     } catch (err) {
       console.error("[create interview / gemini]", err);
-      return NextResponse.json({ error: "The AI could not generate questions right now. Please try again." }, { status: 502 });
+      const hint = process.env.NODE_ENV !== "production" ? ` (${err.message})` : "";
+      return NextResponse.json({ error: "The AI could not generate questions right now. Please try again." + hint }, { status: 502 });
     }
 
     const interview = await Interview.create({ user: userId, category: category._id, difficulty });
