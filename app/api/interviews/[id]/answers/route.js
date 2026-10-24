@@ -47,7 +47,8 @@ export async function POST(req, { params }) {
       });
     } catch (err) {
       console.error("[evaluate / gemini]", err);
-      return NextResponse.json({ error: "The AI could not evaluate your answer right now. Please try again." }, { status: 502 });
+      const hint = process.env.NODE_ENV !== "production" ? ` (${err.message})` : "";
+      return NextResponse.json({ error: "The AI could not evaluate your answer right now. Please try again." + hint }, { status: 502 });
     }
 
     const answer = await Answer.create({ interview: interview._id, question: question._id, user: userId, text: answerText });
