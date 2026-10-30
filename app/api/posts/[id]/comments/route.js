@@ -12,6 +12,7 @@ const shape = (c) => ({
   id: String(c._id),
   author: c.user?.name ?? "Unknown",
   username: c.user?.username ?? "",
+  authorImage: c.user?.image ?? "",
   text: c.text,
   createdAt: c.createdAt,
 });
@@ -25,7 +26,7 @@ export async function GET(_req, { params }) {
   try {
     await connectDB();
     void User;
-    const comments = await Comment.find({ post: params.id }).sort({ createdAt: 1 }).limit(200).populate("user", "name username").lean();
+    const comments = await Comment.find({ post: params.id }).sort({ createdAt: 1 }).limit(200).populate("user", "name username image").lean();
     return NextResponse.json({ comments: comments.map(shape) });
   } catch (err) {
     console.error("[list comments]", err);
@@ -52,7 +53,7 @@ export async function POST(req, { params }) {
     const created = await Comment.create({ post: params.id, user: userId, text: clean });
     await Post.updateOne({ _id: params.id }, { $inc: { commentCount: 1 } });
 
-    const comment = await Comment.findById(created._id).populate("user", "name username").lean();
+    const comment = await Comment.findById(created._id).populate("user", "name username image").lean();
     return NextResponse.json({ comment: shape(comment) }, { status: 201 });
   } catch (err) {
     console.error("[create comment]", err);

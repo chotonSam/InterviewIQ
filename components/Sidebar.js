@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import { avatarUrl } from "@/lib/avatar";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard" },
@@ -10,7 +11,7 @@ const nav = [
   { href: "#", label: "Interview history" },
   { href: "/community", label: "Community" },
   { href: "/resources", label: "Learning resources" },
-  { href: "#", label: "Profile" },
+  { href: "/profile", label: "Profile" },
 ];
 
 export default function Sidebar({ user }) {
@@ -47,15 +48,20 @@ export default function Sidebar({ user }) {
       </nav>
 
       <div className="border-t border-ink-line px-4 py-5">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo/30 text-xs font-medium">
-            {user.name.slice(0, 1).toUpperCase()}
-          </div>
+        <Link href="/profile" className="focus-ring flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-ink-line/40">
+          {user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl(user.image, 64)} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+          ) : (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo/30 text-xs font-medium">
+              {user.name.slice(0, 1).toUpperCase()}
+            </div>
+          )}
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{user.name}</p>
             <p className="truncate font-mono text-xs text-slate-muted">{user.username}</p>
           </div>
-        </div>
+        </Link>
         <button
           type="button"
           onClick={logout}

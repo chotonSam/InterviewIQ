@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { timeAgo } from "@/lib/time";
+import { avatarUrl } from "@/lib/avatar";
 
 const TAGS = ["Experience", "Question", "Frontend", "Backend", "System Design", "HR / Behavioral", "Resources"];
 const COMMENT_POLL_MS = 5000; // how often an open comment section checks for new comments
@@ -15,7 +16,11 @@ async function api(url, options) {
 const postJSON = (url, body) =>
   api(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
-function Avatar({ name, size = "h-8 w-8" }) {
+function Avatar({ name, image, size = "h-8 w-8" }) {
+  if (image) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={avatarUrl(image, 64)} alt="" className={`${size} shrink-0 rounded-full object-cover`} />;
+  }
   return (
     <div className={`${size} flex shrink-0 items-center justify-center rounded-full bg-indigo/30 text-xs font-medium`}>
       {name.slice(0, 1).toUpperCase()}
@@ -79,7 +84,7 @@ function Comments({ postId, onCount }) {
       {comments?.length === 0 && <p className="text-sm text-slate-muted">No comments yet. Be the first.</p>}
       {comments?.map((c) => (
         <div key={c.id} className="flex gap-3">
-          <Avatar name={c.author} size="h-6 w-6" />
+          <Avatar name={c.author} image={c.authorImage} size="h-6 w-6" />
           <div>
             <p className="text-xs">
               <span className="font-medium">{c.author}</span>
@@ -118,7 +123,7 @@ function PostCard({ post, onLike, onCount }) {
     <article className="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Avatar name={post.author} />
+          <Avatar name={post.author} image={post.authorImage} />
           <div>
             <p className="text-sm font-medium">{post.author}</p>
             <p className="font-mono text-xs text-slate-muted">{timeAgo(post.createdAt)}</p>

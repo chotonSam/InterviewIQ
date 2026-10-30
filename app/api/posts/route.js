@@ -25,7 +25,7 @@ export async function GET(req) {
       .sort({ createdAt: -1 })
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
-      .populate("user", "name username")
+      .populate("user", "name username image")
       .lean();
 
     const liked = await Like.find({ user: userId, post: { $in: posts.map((p) => p._id) } }).select("post").lean();
@@ -38,6 +38,7 @@ export async function GET(req) {
         id: String(p._id),
         author: p.user?.name ?? "Unknown",
         username: p.user?.username ?? "",
+        authorImage: p.user?.image ?? "",
         title: p.title,
         body: p.body,
         tag: p.tag,
