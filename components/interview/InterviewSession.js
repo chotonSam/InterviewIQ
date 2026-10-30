@@ -1,4 +1,5 @@
 "use client";
+import Animate from "@/components/motion/Animate";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -98,10 +99,10 @@ export default function InterviewSession({ interview }) {
           Question {index + 1} of {total}
         </p>
 
-        <section className="rounded-2xl border border-ink-line bg-ink-soft/40 p-7">
+        <Animate as="section" key={question.id} scroll={false} className="rounded-2xl border border-ink-line bg-ink-soft/40 p-7">
           <p className="mb-3 font-mono text-xs text-slate-muted">INTERVIEWER</p>
           <h1 className="font-display text-3xl leading-snug">&ldquo;{question.text}&rdquo;</h1>
-        </section>
+        </Animate>
 
         <section className="rounded-2xl border border-ink-line bg-ink-soft/40 p-7">
           <div className="mb-3 flex items-center justify-between">

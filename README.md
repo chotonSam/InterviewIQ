@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations.
 
 ## Run it
 
@@ -63,6 +63,8 @@ Real (MongoDB + Gemini):
 
 - Community: create posts, paginated feed (5 per page), like/unlike (one per user), comments that update live for everyone who has them open (polls every 5s)
 - Learning resources: add YouTube videos (embedded player) or article links, filter by type, paginated (6 per page), 1–5 star rating (change anytime, live average), delete your own, top-rated shown on the dashboard
+
+Animations (GSAP, `components/motion/`): hero entrance, scroll-reveal sections, staggered cards, dashboard chart line draws itself, category bars grow, AI score counts up, question cards slide in. Respects the "reduce motion" OS setting.
 
 Still mock: landing page numbers.
 

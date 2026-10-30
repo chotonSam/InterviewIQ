@@ -1,3 +1,4 @@
+import Animate from "@/components/motion/Animate";
 import Link from "next/link";
 import StatCards from "@/components/dashboard/StatCards";
 import ScoreTrend from "@/components/dashboard/ScoreTrend";
@@ -34,8 +35,8 @@ export default async function DashboardPage() {
           <ScoreTrend scores={data.trend} />
           <CategoryBreakdown items={data.categoryScores} />
         </section>
-        <RecentInterviews items={data.recent} />
-        <RecommendedResources />
+        <Animate><RecentInterviews items={data.recent} /></Animate>
+        <Animate><RecommendedResources /></Animate>
       </main>
     </>
   );

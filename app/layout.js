@@ -25,7 +25,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body className="min-h-screen bg-ink font-body text-paper antialiased">{children}</body>
+      <body className="min-h-screen bg-ink font-body text-paper antialiased">
+        <noscript>
+          <style>{`.reveal,[data-reveal-item]{opacity:1!important}`}</style>
+        </noscript>
+        {children}
+      </body>
     </html>
   );
 }

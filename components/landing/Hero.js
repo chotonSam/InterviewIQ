@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Animate from "@/components/motion/Animate";
 import Annot from "@/components/Annot";
 
 const heroStats = [
@@ -12,18 +13,18 @@ export default function Hero() {
     <section className="relative overflow-hidden">
       <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 pb-24 pt-16 lg:grid-cols-2 lg:px-10">
         {/* Left */}
-        <div>
-          <p className="mb-6 font-mono text-xs uppercase tracking-[0.2em] text-signal-green">AI mock interviews</p>
-          <h1 className="mb-6 font-display text-5xl leading-[1.05] sm:text-6xl">
+        <Animate variant="stagger" scroll={false} stagger={0.12}>
+          <p data-reveal-item className="mb-6 font-mono text-xs uppercase tracking-[0.2em] text-signal-green">AI mock interviews</p>
+          <h1 data-reveal-item className="mb-6 font-display text-5xl leading-[1.05] sm:text-6xl">
             Walk into the real one
             <br />
             having already had it.
           </h1>
-          <p className="mb-9 max-w-md text-lg leading-relaxed text-slate-muted">
+          <p data-reveal-item className="mb-9 max-w-md text-lg leading-relaxed text-slate-muted">
             Pick a role and difficulty, answer real interview questions out loud or in writing, and get scored
             feedback — strengths, gaps, and a better answer — in seconds.
           </p>
-          <div className="flex flex-wrap items-center gap-4">
+          <div data-reveal-item className="flex flex-wrap items-center gap-4">
             <Link href="/interview" className="btn-primary px-6 py-3.5">
               Start a mock interview <span aria-hidden="true">→</span>
             </Link>
@@ -32,7 +33,7 @@ export default function Hero() {
             </a>
           </div>
 
-          <dl className="mt-14 flex gap-10 font-mono text-sm">
+          <dl data-reveal-item className="mt-14 flex gap-10 font-mono text-sm">
             {heroStats.map((s) => (
               <div key={s.label}>
                 <dt className="text-slate-muted">{s.label}</dt>
@@ -40,10 +41,10 @@ export default function Hero() {
               </div>
             ))}
           </dl>
-        </div>
+        </Animate>
 
         {/* Right: annotated transcript (signature element) */}
-        <div className="relative">
+        <Animate variant="left" scroll={false} delay={0.35} className="relative">
           <div className="absolute -inset-6 rounded-full bg-indigo/10 blur-3xl" />
           <div className="relative overflow-hidden rounded-2xl border border-ink-line bg-ink-soft shadow-2xl shadow-black/40">
             <div className="flex items-center justify-between border-b border-ink-line px-5 py-4">
@@ -90,7 +91,7 @@ export default function Hero() {
               </div>
             </div>
           </div>
-        </div>
+        </Animate>
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+import Animate from "@/components/motion/Animate";
 import { toneText } from "@/lib/data";
 import { toneFor } from "@/lib/dashboard";
 
@@ -15,9 +16,9 @@ export default function StatCards({ stats }) {
   ];
 
   return (
-    <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <Animate as="section" variant="stagger" scroll={false} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {cards.map((s) => (
-        <div key={s.label} className="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
+        <div key={s.label} data-reveal-item className="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
           <p className="mb-3 font-mono text-xs text-slate-muted">{s.label}</p>
           <p className={`font-display ${s.small ? "mt-2.5 text-2xl" : "text-4xl"} ${s.tone ? toneText[s.tone] : ""}`}>
             {s.value}
@@ -25,6 +26,6 @@ export default function StatCards({ stats }) {
           </p>
         </div>
       ))}
-    </section>
+    </Animate>
   );
 }

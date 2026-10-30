@@ -1,13 +1,15 @@
+import CountUp from "@/components/motion/CountUp";
+import Animate from "@/components/motion/Animate";
 import Annot from "@/components/Annot";
 import Link from "next/link";
 
 export default function FeedbackPanel({ feedback, answer, isLast, onNext }) {
   return (
-    <section className="rounded-2xl border border-indigo/50 bg-ink-soft/60 p-7" aria-live="polite">
+    <Animate as="section" scroll={false} className="rounded-2xl border border-indigo/50 bg-ink-soft/60 p-7" aria-live="polite">
       <div className="mb-6 flex items-center justify-between">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-indigo">AI feedback</p>
         <span className="font-display text-3xl">
-          {feedback.score}
+          <CountUp value={feedback.score} />
           <span className="font-body text-base text-slate-muted">/100</span>
         </span>
       </div>
@@ -52,6 +54,6 @@ export default function FeedbackPanel({ feedback, answer, isLast, onNext }) {
           </button>
         )}
       </div>
-    </section>
+    </Animate>
   );
 }
