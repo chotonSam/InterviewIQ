@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources.
 
 ## Run it
 
@@ -62,8 +62,9 @@ Real (MongoDB + Gemini):
 - Reopen any past interview from the dashboard to review answers and feedback
 
 - Community: create posts, paginated feed (5 per page), like/unlike (one per user), comments that update live for everyone who has them open (polls every 5s)
+- Learning resources: add YouTube videos (embedded player) or article links, filter by type, paginated (6 per page), 1–5 star rating (change anytime, live average), delete your own, top-rated shown on the dashboard
 
-Still mock: recommended resources, landing page numbers.
+Still mock: landing page numbers.
 
 ## API routes
 
@@ -80,11 +81,16 @@ Still mock: recommended resources, landing page numbers.
 | POST   | `/api/posts/:id/like`              | Toggle like                      |
 | GET    | `/api/posts/:id/comments`          | List comments (polled for live)  |
 | POST   | `/api/posts/:id/comments`          | Add comment                      |
+| GET    | `/api/resources?page=&type=`       | Paginated resources              |
+| POST   | `/api/resources`                   | Add resource (video/article)     |
+| DELETE | `/api/resources/:id`               | Delete your resource             |
+| POST   | `/api/resources/:id/rate`          | Rate 1–5 (create or change)      |
 
 ## Data model (ERD)
 
 USER 1—* INTERVIEW 1—* QUESTION 1—1 ANSWER 1—1 FEEDBACK, and CATEGORY 1—* INTERVIEW.
-USER 1—* POST, POST 1—* COMMENT, POST 1—* LIKE (unique per user+post). See `lib/models/`.
+USER 1—* POST, POST 1—* COMMENT, POST 1—* LIKE (unique per user+post).
+USER 1—* LEARNING_RESOURCE 1—* RATING (unique per user+resource). See `lib/models/`.
 
 ## Next steps
 
