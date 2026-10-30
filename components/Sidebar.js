@@ -9,7 +9,7 @@ const nav = [
   { href: "/interview", label: "Mock interview" },
   { href: "#", label: "Interview history" },
   { href: "/community", label: "Community" },
-  { href: "#", label: "Learning resources" },
+  { href: "/resources", label: "Learning resources" },
   { href: "#", label: "Profile" },
 ];
 
