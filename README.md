@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations. Step 8: Profile + picture upload.
 
 ## Run it
 
@@ -66,6 +66,8 @@ Real (MongoDB + Gemini):
 
 Animations (GSAP, `components/motion/`): hero entrance, scroll-reveal sections, staggered cards, dashboard chart line draws itself, category bars grow, AI score counts up, question cards slide in. Respects the "reduce motion" OS setting.
 
+- Profile (`/profile`): edit name/phone, upload / change / remove a profile picture (browser → Cloudinary unsigned preset → link saved in MongoDB). The picture shows in the sidebar, community posts and comments.
+
 Still mock: landing page numbers.
 
 ## API routes
@@ -87,6 +89,7 @@ Still mock: landing page numbers.
 | POST   | `/api/resources`                   | Add resource (video/article)     |
 | DELETE | `/api/resources/:id`               | Delete your resource             |
 | POST   | `/api/resources/:id/rate`          | Rate 1–5 (create or change)      |
+| PATCH  | `/api/profile`                     | Update name / phone / picture    |
 
 ## Data model (ERD)
 
@@ -94,7 +97,8 @@ USER 1—* INTERVIEW 1—* QUESTION 1—1 ANSWER 1—1 FEEDBACK, and CATEGORY 1�
 USER 1—* POST, POST 1—* COMMENT, POST 1—* LIKE (unique per user+post).
 USER 1—* LEARNING_RESOURCE 1—* RATING (unique per user+resource). See `lib/models/`.
 
-## Next steps
+## Next steps (optional)
 
-1. Learning resources (YouTube embeds + rating)
-2. Profile page + picture upload (Cloudinary)
+1. Email verification (needs an email service such as Resend / Nodemailer)
+2. Phone verification (needs an SMS provider — costs money, can be skipped)
+3. Resource moderation (suggest → admin approves)
