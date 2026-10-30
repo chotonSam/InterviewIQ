@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend.
 
 ## Run it
 
@@ -61,7 +61,9 @@ Real (MongoDB + Gemini):
 - Dashboard: stats, streak, trend, per-category scores, recent interviews (from your real data)
 - Reopen any past interview from the dashboard to review answers and feedback
 
-Still mock: Community page (posts/likes/comments), recommended resources, landing page numbers.
+- Community: create posts, paginated feed (5 per page), like/unlike (one per user), comments that update live for everyone who has them open (polls every 5s)
+
+Still mock: recommended resources, landing page numbers.
 
 ## API routes
 
@@ -73,13 +75,18 @@ Still mock: Community page (posts/likes/comments), recommended resources, landin
 | GET    | `/api/users/check-username?u=`     | Username availability            |
 | POST   | `/api/interviews`                  | Create interview (AI questions)  |
 | POST   | `/api/interviews/:id/answers`      | Submit answer (AI evaluation)    |
+| GET    | `/api/posts?page=`                 | Paginated community feed         |
+| POST   | `/api/posts`                       | Create post                      |
+| POST   | `/api/posts/:id/like`              | Toggle like                      |
+| GET    | `/api/posts/:id/comments`          | List comments (polled for live)  |
+| POST   | `/api/posts/:id/comments`          | Add comment                      |
 
 ## Data model (ERD)
 
-USER 1—* INTERVIEW 1—* QUESTION 1—1 ANSWER 1—1 FEEDBACK, and CATEGORY 1—* INTERVIEW (`lib/models/`).
+USER 1—* INTERVIEW 1—* QUESTION 1—1 ANSWER 1—1 FEEDBACK, and CATEGORY 1—* INTERVIEW.
+USER 1—* POST, POST 1—* COMMENT, POST 1—* LIKE (unique per user+post). See `lib/models/`.
 
 ## Next steps
 
-1. Community backend (posts, comments, likes, real-time comments)
-2. Learning resources (YouTube embeds + rating)
-3. Profile page + picture upload (Cloudinary)
+1. Learning resources (YouTube embeds + rating)
+2. Profile page + picture upload (Cloudinary)
