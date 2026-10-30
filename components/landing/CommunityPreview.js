@@ -1,3 +1,4 @@
+import Animate from "@/components/motion/Animate";
 import { communityPosts } from "@/lib/data";
 
 export default function CommunityPreview() {
@@ -14,9 +15,9 @@ export default function CommunityPreview() {
           </a>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <Animate variant="stagger" className="grid gap-6 md:grid-cols-3">
           {communityPosts.map((p) => (
-            <article key={p.id} className="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
+            <article key={p.id} data-reveal-item className="rounded-2xl border border-ink-line bg-ink-soft/40 p-6">
               <div className="mb-4 flex items-center gap-3">
                 <div className={`h-8 w-8 rounded-full ${p.color}`} />
                 <div>
@@ -32,7 +33,7 @@ export default function CommunityPreview() {
               </div>
             </article>
           ))}
-        </div>
+        </Animate>
       </div>
     </section>
   );

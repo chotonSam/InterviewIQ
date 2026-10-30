@@ -49,3 +49,12 @@ html {
     transition: none !important;
   }
 }
+
+/* GSAP reveal: elements start hidden ONLY when the user hasn't asked for reduced motion.
+   The Animate component then fades them in. (<noscript> in layout.js shows them without JS.) */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal,
+  [data-reveal-item] {
+    opacity: 0;
+  }
+}

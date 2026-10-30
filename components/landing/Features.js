@@ -1,3 +1,4 @@
+import Animate from "@/components/motion/Animate";
 import { CheckCircleIcon, ChartIcon, ChatIcon, BookIcon } from "@/components/Icons";
 
 const features = [
@@ -14,9 +15,9 @@ export default function Features() {
         <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-signal-green">What&apos;s inside</p>
         <h2 className="mb-16 max-w-lg font-display text-4xl">Everything around the interview, too.</h2>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Animate variant="stagger" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map(({ Icon, title, body }) => (
-            <div key={title} className="rounded-2xl border border-ink-line p-6 transition-colors hover:border-indigo/60">
+            <div key={title} data-reveal-item className="rounded-2xl border border-ink-line p-6 transition-colors hover:border-indigo/60">
               <div className="mb-5 flex h-9 w-9 items-center justify-center rounded-lg bg-indigo/15 text-indigo">
                 <Icon />
               </div>
@@ -24,7 +25,7 @@ export default function Features() {
               <p className="text-sm leading-relaxed text-slate-muted">{body}</p>
             </div>
           ))}
-        </div>
+        </Animate>
       </div>
     </section>
   );

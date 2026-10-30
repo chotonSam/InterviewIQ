@@ -1,3 +1,4 @@
+import AnimatedBar from "@/components/motion/AnimatedBar";
 import { toneBg } from "@/lib/data";
 
 export default function CategoryBreakdown({ items }) {
@@ -8,14 +9,14 @@ export default function CategoryBreakdown({ items }) {
         <p className="text-sm text-slate-muted">Your category scores will appear after your first completed interview.</p>
       ) : (
         <ul className="space-y-5">
-          {items.map((c) => (
+          {items.map((c, i) => (
             <li key={c.name}>
               <div className="mb-1.5 flex justify-between text-sm">
                 <span>{c.name}</span>
                 <span className="font-mono text-slate-muted">{c.score}</span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-ink-line">
-                <div className={`h-full rounded-full ${toneBg[c.tone]}`} style={{ width: `${c.score}%` }} />
+                <AnimatedBar percent={c.score} delay={0.2 + i * 0.1} className={toneBg[c.tone]} />
               </div>
             </li>
           ))}

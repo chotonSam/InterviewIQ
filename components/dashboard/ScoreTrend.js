@@ -1,3 +1,4 @@
+import ChartAnimator from "@/components/motion/ChartAnimator";
 export default function ScoreTrend({ scores }) {
   const n = scores.length;
 
@@ -30,12 +31,14 @@ export default function ScoreTrend({ scores }) {
         {[10, 80, 150].map((y) => (
           <line key={y} x1="0" y1={y} x2="480" y2={y} stroke="#2A2E40" strokeWidth="1" />
         ))}
-        <polyline fill="none" stroke="#5B5FEF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-          points={pts.map((p) => p.join(",")).join(" ")} />
-        {pts.slice(0, -1).map(([x, y]) => (
-          <circle key={x} cx={x} cy={y} r="4" fill="#5B5FEF" />
-        ))}
-        <circle cx={last[0]} cy={last[1]} r="5" fill="#34D399" />
+        <ChartAnimator>
+          <polyline fill="none" stroke="#5B5FEF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+            points={pts.map((p) => p.join(",")).join(" ")} />
+          {pts.slice(0, -1).map(([x, y]) => (
+            <circle key={x} cx={x} cy={y} r="4" fill="#5B5FEF" />
+          ))}
+          <circle cx={last[0]} cy={last[1]} r="5" fill="#34D399" />
+        </ChartAnimator>
       </svg>
 
       <div className="mt-2 flex justify-between font-mono text-xs text-slate-muted">
