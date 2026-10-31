@@ -8,6 +8,7 @@ import Answer from "@/lib/models/Answer";
 import Feedback from "@/lib/models/Feedback";
 import { getSessionUserId } from "@/lib/session";
 import { evaluateAnswer } from "@/lib/gemini";
+import { nextLevelAfter } from "@/lib/topics";
 
 // Submit an answer: server sends question + answer to Gemini, stores answer + feedback
 export async function POST(req, { params }) {
@@ -22,7 +23,7 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: "Invalid request." }, { status: 400 });
     }
     if (!answerText) return NextResponse.json({ error: "Write an answer first." }, { status: 400 });
-    if (answerText.length > 4000) return NextResponse.json({ error: "Answer is too long (max 4000 characters)." }, { status: 400 });
+    if (answerText.length > 2000) return NextResponse.json({ error: "Answer is too long (max 2000 characters)." }, { status: 400 });
 
     await connectDB();
 
@@ -40,9 +41,10 @@ export async function POST(req, { params }) {
     let result;
     try {
       result = await evaluateAnswer({
-        category: interview.category.name,
+        topic: interview.topic || interview.category.name,
         difficulty: interview.difficulty,
         question: question.text,
+        code: question.code,
         answer: answerText,
       });
     } catch (err) {
@@ -71,7 +73,12 @@ export async function POST(req, { params }) {
       completed = true;
     }
 
-    return NextResponse.json({ feedback: result, completed, interviewScore });
+    return NextResponse.json({
+      feedback: result,
+      completed,
+      interviewScore,
+      nextLevel: completed ? nextLevelAfter(interview.difficulty) : null, // what to suggest next (Easy→Medium→Hard)
+    });
   } catch (err) {
     if (err?.code === 11000) return NextResponse.json({ error: "This question was already answered." }, { status: 409 });
     console.error("[submit answer]", err);

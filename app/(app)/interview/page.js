@@ -1,10 +1,13 @@
 import InterviewSetup from "@/components/interview/InterviewSetup";
 import { ensureCategories } from "@/lib/categories";
+import { getProgressSummary } from "@/lib/progress";
+import { getSessionUserId } from "@/lib/session";
 
 export const metadata = { title: "New Mock Interview — InterviewIQ" };
 
 export default async function NewInterviewPage() {
-  const categories = await ensureCategories();
+  const userId = await getSessionUserId();
+  const [categories, progress] = await Promise.all([ensureCategories(), getProgressSummary(userId)]);
 
   return (
     <>
@@ -16,7 +19,7 @@ export default async function NewInterviewPage() {
           </div>
         </div>
       </header>
-      <InterviewSetup categories={categories} />
+      <InterviewSetup categories={categories} progress={progress} />
     </>
   );
 }

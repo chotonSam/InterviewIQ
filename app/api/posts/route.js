@@ -39,6 +39,7 @@ export async function GET(req) {
         author: p.user?.name ?? "Unknown",
         username: p.user?.username ?? "",
         authorImage: p.user?.image ?? "",
+        mine: String(p.user?._id) === String(userId),
         title: p.title,
         body: p.body,
         tag: p.tag,

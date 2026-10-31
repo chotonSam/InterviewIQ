@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { timeAgo } from "@/lib/time";
 import { RESOURCE_TAGS } from "@/lib/resources";
+import { uploadImage } from "@/lib/upload";
+import Thumb from "@/components/resources/Thumb";
 
 async function api(url, options) {
   const res = await fetch(url, options);
@@ -39,7 +41,8 @@ function StarRating({ value, onRate }) {
   );
 }
 
-function VideoPlayer({ id, title }) {
+function VideoPlayer({ resource }) {
+  const { youtubeId: id, title } = resource;
   const [playing, setPlaying] = useState(false);
 
   if (playing) {
@@ -57,8 +60,7 @@ function VideoPlayer({ id, title }) {
   return (
     <button type="button" onClick={() => setPlaying(true)} aria-label={`Play video: ${title}`}
       className="focus-ring group relative block aspect-video w-full overflow-hidden bg-ink-line">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" loading="lazy" className="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100" />
+      <Thumb resource={resource} className="h-full w-full opacity-90 transition-opacity group-hover:opacity-100" />
       <span className="absolute inset-0 flex items-center justify-center">
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo text-xl text-white shadow-lg">▶</span>
       </span>
@@ -73,12 +75,11 @@ function ResourceCard({ r, onRate, onDelete }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/40">
       {r.type === "video" ? (
-        <VideoPlayer id={r.youtubeId} title={r.title} />
+        <VideoPlayer resource={r} />
       ) : (
         <a href={r.url} target="_blank" rel="noopener noreferrer nofollow"
-          className="focus-ring flex aspect-video w-full flex-col items-center justify-center gap-2 bg-ink-line/60 text-slate-muted transition-colors hover:text-paper">
-          <span className="text-3xl" aria-hidden="true">📄</span>
-          <span className="font-mono text-xs">{host}</span>
+          className="focus-ring block aspect-video w-full overflow-hidden bg-ink-line/60" aria-label={`Open ${r.title} on ${host}`}>
+          <Thumb resource={r} className="h-full w-full" />
         </a>
       )}
 
@@ -122,7 +123,8 @@ export default function ResourcesBoard() {
   const [loadError, setLoadError] = useState("");
 
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", url: "", tag: "General", description: "" });
+  const [form, setForm] = useState({ title: "", url: "", tag: "General", description: "", thumbnail: "" });
+  const [thumbBusy, setThumbBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -149,7 +151,7 @@ export default function ResourcesBoard() {
     setSaving(true);
     try {
       await postJSON("/api/resources", form);
-      setForm({ title: "", url: "", tag: "General", description: "" });
+      setForm({ title: "", url: "", tag: "General", description: "", thumbnail: "" });
       setShowForm(false);
       if (type !== "all") setType("all");
       else await load(1, "all");
@@ -187,6 +189,22 @@ export default function ResourcesBoard() {
   }
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  async function onThumbFile(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setFormError("");
+    setThumbBusy(true);
+    try {
+      const url = await uploadImage(file);
+      setForm((f) => ({ ...f, thumbnail: url }));
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setThumbBusy(false);
+    }
+  }
   const tabs = [["all", "All"], ["video", "Videos"], ["article", "Articles"]];
 
   return (
@@ -228,9 +246,25 @@ export default function ResourcesBoard() {
             <label htmlFor="r-desc" className="mb-2 block text-sm font-medium">Why is it useful? <span className="font-normal text-slate-muted">(optional)</span></label>
             <input id="r-desc" value={form.description} onChange={set("description")} maxLength={300} className="field focus-ring" />
           </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">Thumbnail <span className="font-normal text-slate-muted">(optional — otherwise we use the video&apos;s or the page&apos;s own image automatically)</span></p>
+            <div className="flex flex-wrap items-center gap-4">
+              {form.thumbnail && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={form.thumbnail} alt="Your chosen thumbnail" className="h-16 w-28 rounded-lg object-cover" />
+              )}
+              <label className={`focus-within:outline focus-within:outline-2 focus-within:outline-indigo cursor-pointer rounded-full border border-ink-line px-4 py-2 text-sm text-slate-muted transition-colors hover:border-indigo/60 hover:text-paper ${thumbBusy ? "opacity-60" : ""}`}>
+                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onThumbFile} disabled={thumbBusy} className="sr-only" />
+                {thumbBusy ? "Uploading…" : form.thumbnail ? "Change image" : "Upload image"}
+              </label>
+              {form.thumbnail && !thumbBusy && (
+                <button type="button" onClick={() => setForm((f) => ({ ...f, thumbnail: "" }))} className="focus-ring rounded text-sm text-slate-muted hover:text-signal-red">Remove</button>
+              )}
+            </div>
+          </div>
           {formError && <p role="alert" className="text-sm text-signal-red">{formError}</p>}
           <div className="flex justify-end">
-            <button type="submit" disabled={saving} className="btn-primary px-6 py-2.5 text-sm disabled:opacity-60">{saving ? "Adding…" : "Add resource"}</button>
+            <button type="submit" disabled={saving || thumbBusy} className="btn-primary px-6 py-2.5 text-sm disabled:opacity-60">{saving ? "Adding…" : "Add resource"}</button>
           </div>
         </form>
       )}

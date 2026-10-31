@@ -8,7 +8,8 @@ import { avatarUrl } from "@/lib/avatar";
 const nav = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/interview", label: "Mock interview" },
-  { href: "#", label: "Interview history" },
+  { href: "/chat", label: "Practice chat" },
+  { href: "/history", label: "Interview history" },
   { href: "/community", label: "Community" },
   { href: "/resources", label: "Learning resources" },
   { href: "/profile", label: "Profile" },

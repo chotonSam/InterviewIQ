@@ -1,7 +1,8 @@
 import Animate from "@/components/motion/Animate";
 import Link from "next/link";
 import StatCards from "@/components/dashboard/StatCards";
-import ScoreTrend from "@/components/dashboard/ScoreTrend";
+import ScoreChart from "@/components/dashboard/ScoreChart";
+import NextUp from "@/components/dashboard/NextUp";
 import CategoryBreakdown from "@/components/dashboard/CategoryBreakdown";
 import RecentInterviews from "@/components/dashboard/RecentInterviews";
 import RecommendedResources from "@/components/dashboard/RecommendedResources";
@@ -30,9 +31,10 @@ export default async function DashboardPage() {
       </header>
 
       <main className="space-y-10 px-6 py-10 lg:px-10">
+        <NextUp nextUp={data.nextUp} />
         <StatCards stats={data.stats} />
         <section className="grid gap-6 lg:grid-cols-3">
-          <ScoreTrend scores={data.trend} />
+          <ScoreChart trend={data.trend} />
           <CategoryBreakdown items={data.categoryScores} />
         </section>
         <Animate><RecentInterviews items={data.recent} /></Animate>

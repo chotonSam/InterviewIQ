@@ -6,6 +6,7 @@ export default function RecentInterviews({ items }) {
     <section className="overflow-hidden rounded-2xl border border-ink-line bg-ink-soft/40">
       <div className="flex items-center justify-between border-b border-ink-line px-6 py-5">
         <h2 className="font-medium">Recent interviews</h2>
+        <Link href="/history" className="focus-ring rounded text-sm text-slate-muted transition-colors hover:text-paper">View all →</Link>
       </div>
 
       {items.length === 0 ? (
