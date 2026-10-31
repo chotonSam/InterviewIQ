@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations. Step 8: Profile + picture upload.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations. Step 8: Profile + picture upload. Step 9: faster AI, short questions, locked levels, custom fields, practice chat, real history. Step 10: polish — thumbnails, live landing page, new score chart, post delete, profile activity.
 
 ## Run it
 
@@ -68,7 +68,21 @@ Animations (GSAP, `components/motion/`): hero entrance, scroll-reveal sections, 
 
 - Profile (`/profile`): edit name/phone, upload / change / remove a profile picture (browser → Cloudinary unsigned preset → link saved in MongoDB). The picture shows in the sidebar, community posts and comments.
 
-Still mock: landing page numbers.
+Interview upgrade (step 9):
+- Speed: fastest "flash-lite" models first, thinking turned down, hedged requests (a slow model never blocks), timing logged in the server console (`[gemini] model ok in 1200ms`).
+- 10 short questions per interview (concept / predict the output / spot the bug / what-if-you-change / quick scenario). Small code snippets are shown in a code block.
+- Levels are connected: Easy → Medium → Hard. Medium unlocks after completing Easy, Hard after Medium, separately for each field. Enforced on the server. The results screen suggests the next level.
+- "Other field": type any field (e.g. Digital Marketing); it gets its own progress.
+- Practice chat (`/chat`): casual AI coach that asks one short question at a time, gives structured feedback (verdict, comment, ideal answer), and answers hint/explain requests. Not scored or locked. Chats are saved.
+- Interview history (`/history`): every interview (paginated) plus per-field level progress.
+
+Step 10 polish:
+- Answers aren't length-limited any more (up to 2000 characters). Practice-chat explanations can be long and are formatted (paragraphs, bullet lists, bold, code blocks). Mock interview: Ctrl+Enter submits.
+- Resource thumbnails: automatic (YouTube thumbnail for videos, the page's own preview image for articles, fetched safely on the server), or upload your own. Broken images fall back to a placeholder.
+- Landing page: header shows Dashboard / profile / Log out when logged in (Log in / Start free otherwise); numbers and community posts are real data; copy matches the current interview style.
+- Dashboard: new score chart (smooth curve, scale, average line, hover details) and a "next step" card (resume / next level).
+- Community: delete your own posts. Profile: "My posts" and "My resources" tabs.
+
 
 ## API routes
 
@@ -83,6 +97,7 @@ Still mock: landing page numbers.
 | GET    | `/api/posts?page=`                 | Paginated community feed         |
 | POST   | `/api/posts`                       | Create post                      |
 | POST   | `/api/posts/:id/like`              | Toggle like                      |
+| DELETE | `/api/posts/:id`                   | Delete your post                 |
 | GET    | `/api/posts/:id/comments`          | List comments (polled for live)  |
 | POST   | `/api/posts/:id/comments`          | Add comment                      |
 | GET    | `/api/resources?page=&type=`       | Paginated resources              |
@@ -90,12 +105,16 @@ Still mock: landing page numbers.
 | DELETE | `/api/resources/:id`               | Delete your resource             |
 | POST   | `/api/resources/:id/rate`          | Rate 1–5 (create or change)      |
 | PATCH  | `/api/profile`                     | Update name / phone / picture    |
+| POST   | `/api/chat`                        | Start a practice chat            |
+| POST   | `/api/chat/:id`                    | Send a message, get coach reply  |
+| DELETE | `/api/chat/:id`                    | Delete a chat                    |
 
 ## Data model (ERD)
 
 USER 1—* INTERVIEW 1—* QUESTION 1—1 ANSWER 1—1 FEEDBACK, and CATEGORY 1—* INTERVIEW.
 USER 1—* POST, POST 1—* COMMENT, POST 1—* LIKE (unique per user+post).
 USER 1—* LEARNING_RESOURCE 1—* RATING (unique per user+resource). See `lib/models/`.
+USER 1—* CHAT_SESSION (messages embedded).
 
 ## Next steps (optional)
 

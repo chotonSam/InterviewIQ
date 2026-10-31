@@ -115,7 +115,7 @@ function Comments({ postId, onCount }) {
   );
 }
 
-function PostCard({ post, onLike, onCount }) {
+function PostCard({ post, onLike, onCount, onDelete }) {
   const [open, setOpen] = useState(false);
   const setCount = useCallback((n) => onCount(post.id, n), [onCount, post.id]);
 
@@ -152,6 +152,11 @@ function PostCard({ post, onLike, onCount }) {
         >
           <span aria-hidden="true">💬</span> {post.comments} {post.comments === 1 ? "comment" : "comments"}
         </button>
+        {post.mine && (
+          <button type="button" onClick={() => onDelete(post.id)} className="focus-ring ml-auto rounded text-signal-red/80 transition-colors hover:text-signal-red">
+            Delete
+          </button>
+        )}
       </div>
 
       {open && <Comments postId={post.id} onCount={setCount} />}
@@ -215,6 +220,16 @@ export default function CommunityFeed() {
     }
   }
 
+  async function removePost(id) {
+    if (!window.confirm("Delete this post? Its comments and likes will be removed too.")) return;
+    try {
+      await api(`/api/posts/${id}`, { method: "DELETE" });
+      await load(posts.length === 1 && page > 1 ? page - 1 : page); // stay on a page that still exists
+    } catch (err) {
+      setLoadError(err.message);
+    }
+  }
+
   const updateCount = useCallback((id, n) => {
     setPosts((all) => (all ? all.map((p) => (p.id === id && p.comments !== n ? { ...p, comments: n } : p)) : all));
   }, []);
@@ -256,7 +271,7 @@ export default function CommunityFeed() {
       )}
 
       <div className="space-y-5">
-        {posts?.map((p) => <PostCard key={p.id} post={p} onLike={toggleLike} onCount={updateCount} />)}
+        {posts?.map((p) => <PostCard key={p.id} post={p} onLike={toggleLike} onCount={updateCount} onDelete={removePost} />)}
       </div>
 
       {totalPages > 1 && (

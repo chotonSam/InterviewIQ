@@ -5,6 +5,8 @@ import LearningResource from "@/lib/models/LearningResource";
 import Rating from "@/lib/models/Rating";
 import { getSessionUserId } from "@/lib/session";
 import { RESOURCE_TAGS, parseYouTubeId, cleanUrl } from "@/lib/resources";
+import { fetchPreviewImage } from "@/lib/og";
+import { isCloudinaryImage } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 6;
@@ -32,6 +34,19 @@ export async function GET(req) {
       .populate("user", "name username")
       .lean();
 
+    // Articles added before previews existed: look their preview image up once (a few at a time)
+    const missing = items.filter((r) => r.type === "article" && !r.thumbnail && !r.thumbTried).slice(0, 3);
+    if (missing.length) {
+      await Promise.allSettled(
+        missing.map(async (r) => {
+          const img = await fetchPreviewImage(r.url);
+          await LearningResource.updateOne({ _id: r._id }, { thumbnail: img, thumbTried: true });
+          r.thumbnail = img;
+          r.thumbTried = true;
+        })
+      );
+    }
+
     const mine = await Rating.find({ user: userId, resource: { $in: items.map((r) => r._id) } }).select("resource value").lean();
     const myRatings = Object.fromEntries(mine.map((m) => [String(m.resource), m.value]));
 
@@ -45,6 +60,7 @@ export async function GET(req) {
         url: r.url,
         type: r.type,
         youtubeId: r.youtubeId,
+        thumbnail: r.thumbnail ?? "",
         tag: r.tag,
         author: r.user?.name ?? "Unknown",
         mine: String(r.user?._id) === String(userId),
@@ -71,18 +87,25 @@ export async function POST(req) {
     const description = String(data.description ?? "").trim();
     const url = cleanUrl(data.url);
     const tag = RESOURCE_TAGS.includes(data.tag) ? data.tag : "General";
+    const customThumb = typeof data.thumbnail === "string" && data.thumbnail !== "" ? data.thumbnail : "";
 
     if (!title || title.length > 120) return NextResponse.json({ error: "Title is required (max 120 characters)." }, { status: 400 });
     if (description.length > 300) return NextResponse.json({ error: "Description is too long (max 300 characters)." }, { status: 400 });
     if (!url) return NextResponse.json({ error: "Enter a valid link starting with http:// or https://" }, { status: 400 });
 
+    if (customThumb && !isCloudinaryImage(customThumb)) return NextResponse.json({ error: "Invalid thumbnail image." }, { status: 400 });
+
     const youtubeId = parseYouTubeId(url);
+    // Thumbnail: the one the user uploaded, else (articles) the page's own preview image. Videos use YouTube's.
+    const thumbnail = customThumb || (youtubeId ? "" : await fetchPreviewImage(url));
 
     await connectDB();
     const resource = await LearningResource.create({
       user: userId, title, description, url, tag,
       type: youtubeId ? "video" : "article",
       youtubeId: youtubeId ?? "",
+      thumbnail,
+      thumbTried: true,
     });
     return NextResponse.json({ id: String(resource._id) }, { status: 201 });
   } catch (err) {

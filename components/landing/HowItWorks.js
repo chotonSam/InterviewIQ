@@ -1,8 +1,8 @@
 import Animate from "@/components/motion/Animate";
 const steps = [
-  { n: "01", title: "Choose your setup", body: "Pick a category — frontend, backend, HR, system design — and a difficulty that matches where you're at." },
-  { n: "02", title: "Answer real questions", body: "AI generates questions on the spot and runs the session like an actual interviewer, not a static quiz." },
-  { n: "03", title: "Get scored feedback", body: "See your score, strengths, weak spots, and a stronger version of your answer — saved to your history." },
+  { n: "01", title: "Pick a field — or type your own", body: "Frontend, backend, HR… or any field you can name. Everyone starts at Easy." },
+  { n: "02", title: "Answer 10 short questions", body: "Predict the output, spot the bug, handle a quick scenario. Short like a real interview, and you can answer as briefly or as fully as you like." },
+  { n: "03", title: "Get scored, then level up", body: "An instant AI score and an ideal answer for each question. Finish a level to unlock the next: Easy → Medium → Hard." },
 ];
 
 export default function HowItWorks() {
