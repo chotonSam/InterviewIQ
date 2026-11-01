@@ -55,6 +55,7 @@ export default function Sidebar({ user, unread }) {
       </nav>
 
       <div className="shrink-0 border-t border-ink-line px-4 py-5">
+        <Link href="/" className="focus-ring mb-2 block rounded-lg px-3 py-2 text-sm text-slate-muted transition-colors hover:bg-ink-line/40 hover:text-paper">← Home page</Link>
         <Link href="/profile" className="focus-ring flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-ink-line/40">
           {user.image ? (
             // eslint-disable-next-line @next/next/no-img-element

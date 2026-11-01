@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { timeAgo } from "@/lib/time";
 import { avatarUrl } from "@/lib/avatar";
@@ -28,11 +28,33 @@ export function Avatar({ name, image, size = "h-8 w-8" }) {
   );
 }
 
+function CommentItem({ c, onReply, small = false }) {
+  return (
+    <div className="flex gap-3">
+      <Link href={`/u/${c.username}`} aria-label={`${c.author}'s profile`} className="focus-ring h-fit shrink-0 rounded-full">
+        <Avatar name={c.author} image={c.authorImage} size={small ? "h-6 w-6" : "h-7 w-7"} />
+      </Link>
+      <div className="min-w-0">
+        <p className="text-xs">
+          <Link href={`/u/${c.username}`} className="focus-ring rounded font-medium hover:text-indigo">{c.author}</Link>
+          <span className="ml-2 font-mono text-slate-muted">{timeAgo(c.createdAt)}</span>
+        </p>
+        <p className="mt-1 whitespace-pre-line break-words text-sm leading-relaxed text-slate-muted">{c.text}</p>
+        <button type="button" onClick={() => onReply(c)} className="focus-ring mt-1 rounded font-mono text-xs text-slate-muted transition-colors hover:text-indigo">
+          Reply
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Comments({ postId, onCount }) {
   const [comments, setComments] = useState(null); // null = loading
   const [text, setText] = useState("");
+  const [replyTo, setReplyTo] = useState(null); // the comment being answered, or null for a new top-level comment
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
+  const inputRef = useRef(null);
 
   // Load now, then poll so comments from other users appear without a refresh
   useEffect(() => {
@@ -57,13 +79,26 @@ function Comments({ postId, onCount }) {
     };
   }, [postId, onCount]);
 
+  function startReply(c) {
+    setReplyTo({ id: c.id, name: c.author });
+    // answering a reply: start with @name so it's clear who you mean
+    setText(c.parentId ? `@${c.author} ` : "");
+    setError("");
+    inputRef.current?.focus();
+  }
+
+  function cancelReply() {
+    setReplyTo(null);
+    setText("");
+  }
+
   async function submit(e) {
     e.preventDefault();
     if (!text.trim()) return;
     setError("");
     setSending(true);
     try {
-      const { comment } = await postJSON(`/api/posts/${postId}/comments`, { text });
+      const { comment } = await postJSON(`/api/posts/${postId}/comments`, { text, parentId: replyTo?.id });
       setComments((list) => {
         const next = list ?? [];
         const merged = next.some((c) => c.id === comment.id) ? next : [...next, comment];
@@ -71,6 +106,7 @@ function Comments({ postId, onCount }) {
         return merged;
       });
       setText("");
+      setReplyTo(null);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -78,40 +114,51 @@ function Comments({ postId, onCount }) {
     }
   }
 
+  // top-level comments, each followed by its replies (a reply whose parent is missing is shown as top-level)
+  const ids = new Set((comments ?? []).map((c) => c.id));
+  const tops = (comments ?? []).filter((c) => !c.parentId || !ids.has(c.parentId));
+  const repliesOf = (id) => (comments ?? []).filter((c) => c.parentId === id);
+
   return (
     <div className="mt-5 space-y-4 border-t border-ink-line pt-5">
       {comments === null && <p className="text-sm text-slate-muted">Loading comments…</p>}
       {comments?.length === 0 && <p className="text-sm text-slate-muted">No comments yet. Be the first.</p>}
-      {comments?.map((c) => (
-        <div key={c.id} className="flex gap-3">
-          <Link href={`/u/${c.username}`} aria-label={`${c.author}'s profile`} className="focus-ring h-fit rounded-full">
-            <Avatar name={c.author} image={c.authorImage} size="h-6 w-6" />
-          </Link>
-          <div>
-            <p className="text-xs">
-              <Link href={`/u/${c.username}`} className="focus-ring rounded font-medium hover:text-indigo">{c.author}</Link>
-              <span className="ml-2 font-mono text-slate-muted">{timeAgo(c.createdAt)}</span>
-            </p>
-            <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-slate-muted">{c.text}</p>
-          </div>
+
+      {tops.map((c) => (
+        <div key={c.id} className="space-y-3">
+          <CommentItem c={c} onReply={startReply} />
+          {repliesOf(c.id).length > 0 && (
+            <div className="ml-3 space-y-3 border-l border-ink-line pl-4 sm:ml-5">
+              {repliesOf(c.id).map((r) => <CommentItem key={r.id} c={r} onReply={startReply} small />)}
+            </div>
+          )}
         </div>
       ))}
 
       {error && <p role="alert" className="text-sm text-signal-red">{error}</p>}
 
-      <form onSubmit={submit} className="flex gap-3 pt-1">
-        <label htmlFor={`c-${postId}`} className="sr-only">Write a comment</label>
-        <input
-          id={`c-${postId}`}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          maxLength={500}
-          placeholder="Write a comment…"
-          className="field focus-ring"
-        />
-        <button type="submit" disabled={!text.trim() || sending} className="btn-primary px-5 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">
-          {sending ? "…" : "Post"}
-        </button>
+      <form onSubmit={submit} className="space-y-2 pt-1">
+        {replyTo && (
+          <p className="flex items-center justify-between gap-3 rounded-lg bg-indigo/10 px-3 py-1.5 font-mono text-xs text-slate-muted">
+            <span className="truncate">Replying to <span className="text-paper">{replyTo.name}</span></span>
+            <button type="button" onClick={cancelReply} className="focus-ring shrink-0 rounded text-indigo hover:text-paper">Cancel</button>
+          </p>
+        )}
+        <div className="flex gap-3">
+          <label htmlFor={`c-${postId}`} className="sr-only">{replyTo ? "Write a reply" : "Write a comment"}</label>
+          <input
+            id={`c-${postId}`}
+            ref={inputRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            maxLength={500}
+            placeholder={replyTo ? `Reply to ${replyTo.name}…` : "Write a comment…"}
+            className="field focus-ring"
+          />
+          <button type="submit" disabled={!text.trim() || sending} className="btn-primary px-5 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">
+            {sending ? "…" : replyTo ? "Reply" : "Post"}
+          </button>
+        </div>
       </form>
     </div>
   );
