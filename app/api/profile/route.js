@@ -27,6 +27,12 @@ export async function PATCH(req) {
       update.phone = phone;
     }
 
+    if ("bio" in body) {
+      const bio = String(body.bio ?? "").trim();
+      if (bio.length > 160) return NextResponse.json({ error: "Bio is too long (max 160 characters)." }, { status: 400 });
+      update.bio = bio;
+    }
+
     if ("image" in body) {
       // "" removes the picture; otherwise it must be an image in our own Cloudinary account
       if (body.image !== "" && !isValidAvatarUrl(body.image)) {
@@ -38,10 +44,10 @@ export async function PATCH(req) {
     if (Object.keys(update).length === 0) return NextResponse.json({ error: "Nothing to update." }, { status: 400 });
 
     await connectDB();
-    const user = await User.findByIdAndUpdate(userId, update, { new: true }).select("name phone image");
+    const user = await User.findByIdAndUpdate(userId, update, { new: true }).select("name phone image bio");
     if (!user) return NextResponse.json({ error: "Account not found." }, { status: 404 });
 
-    return NextResponse.json({ name: user.name, phone: user.phone, image: user.image });
+    return NextResponse.json({ name: user.name, phone: user.phone, image: user.image, bio: user.bio ?? "" });
   } catch (err) {
     console.error("[update profile]", err);
     return NextResponse.json({ error: "Could not save your profile." }, { status: 500 });

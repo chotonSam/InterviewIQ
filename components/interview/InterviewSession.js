@@ -86,7 +86,7 @@ export default function InterviewSession({ interview }) {
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-ink-line bg-ink/90 backdrop-blur">
-        <div className="flex h-16 items-center justify-between gap-6 px-6 lg:px-10">
+        <div className="flex h-16 items-center justify-between gap-4 px-4 sm:gap-6 sm:px-6 lg:px-10">
           <div className="flex min-w-0 items-center gap-3">
             <span className="flex shrink-0 items-center gap-1.5 font-mono text-xs text-signal-red">
               <span className="rec-dot h-2 w-2 rounded-full bg-signal-red" /> LIVE
@@ -109,7 +109,7 @@ export default function InterviewSession({ interview }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 px-6 pb-4 lg:px-10" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={index + 1}>
+        <div className="flex items-center gap-1 px-4 pb-4 sm:gap-1.5 sm:px-6 lg:px-10" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={index + 1}>
           {questions.map((q, i) => (
             <button
               key={q.id}
@@ -122,7 +122,7 @@ export default function InterviewSession({ interview }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl space-y-6 px-6 py-10 lg:px-10">
+      <main className="mx-auto max-w-3xl space-y-5 px-4 py-6 sm:space-y-6 sm:px-6 sm:py-10 lg:px-10">
         {showSummary && allDone ? (
           <SummaryCard interview={interview} results={results} onReview={() => { setShowSummary(false); setIndex(0); }} />
         ) : (

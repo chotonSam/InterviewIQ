@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
 import LearningResource from "@/lib/models/LearningResource";
@@ -11,7 +12,7 @@ import { isCloudinaryImage } from "@/lib/avatar";
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 6;
 
-// GET /api/resources?page=1&type=video|article
+// GET /api/resources?page=1&type=video|article&tag=Frontend&q=react&sort=new|top|popular&mine=1
 export async function GET(req) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Please log in." }, { status: 401 });
@@ -20,19 +21,50 @@ export async function GET(req) {
     const sp = new URL(req.url).searchParams;
     const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
     const type = ["video", "article"].includes(sp.get("type")) ? sp.get("type") : null;
-    const filter = type ? { type } : {};
+    const tag = RESOURCE_TAGS.includes(sp.get("tag")) ? sp.get("tag") : null;
+    const q = (sp.get("q") ?? "").trim().slice(0, 60);
+    const sort = ["new", "top", "popular"].includes(sp.get("sort")) ? sp.get("sort") : "new";
+
+    // Filters WITHOUT the topic — also used to count how many resources each topic has
+    const base = {};
+    if (type) base.type = type;
+    if (sp.get("mine") === "1") base.user = new mongoose.Types.ObjectId(userId);
+    if (q) {
+      // the search text is escaped, so it is matched literally (no regex tricks)
+      const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      base.$or = [{ title: rx }, { description: rx }];
+    }
+    const filter = tag ? { ...base, tag } : base;
 
     await connectDB();
     void User;
-    const total = await LearningResource.countDocuments(filter);
+    const [total, tagRows] = await Promise.all([
+      LearningResource.countDocuments(filter),
+      LearningResource.aggregate([{ $match: base }, { $group: { _id: "$tag", n: { $sum: 1 } } }]),
+    ]);
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const tagCounts = Object.fromEntries(tagRows.map((r) => [r._id, r.n]));
+    const skip = (page - 1) * PAGE_SIZE;
 
-    const items = await LearningResource.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * PAGE_SIZE)
-      .limit(PAGE_SIZE)
-      .populate("user", "name username")
-      .lean();
+    let items;
+    if (sort === "new") {
+      items = await LearningResource.find(filter).sort({ createdAt: -1 }).skip(skip).limit(PAGE_SIZE).populate("user", "name username").lean();
+    } else {
+      // "top" = best average rating, "popular" = most ratings. Rank first, then load that page of documents.
+      const order = sort === "top" ? { avg: -1, ratingCount: -1, createdAt: -1 } : { ratingCount: -1, avg: -1, createdAt: -1 };
+      const ranked = await LearningResource.aggregate([
+        { $match: filter },
+        { $addFields: { avg: { $cond: [{ $gt: ["$ratingCount", 0] }, { $divide: ["$ratingSum", "$ratingCount"] }, 0] } } },
+        { $sort: order },
+        { $skip: skip },
+        { $limit: PAGE_SIZE },
+        { $project: { _id: 1 } },
+      ]);
+      const ids = ranked.map((r) => r._id);
+      const docs = await LearningResource.find({ _id: { $in: ids } }).populate("user", "name username").lean();
+      const byId = new Map(docs.map((d) => [String(d._id), d]));
+      items = ids.map((id) => byId.get(String(id))).filter(Boolean);
+    }
 
     // Articles added before previews existed: look their preview image up once (a few at a time)
     const missing = items.filter((r) => r.type === "article" && !r.thumbnail && !r.thumbTried).slice(0, 3);
@@ -53,6 +85,8 @@ export async function GET(req) {
     return NextResponse.json({
       page,
       totalPages,
+      total,
+      tagCounts,
       resources: items.map((r) => ({
         id: String(r._id),
         title: r.title,
@@ -63,6 +97,7 @@ export async function GET(req) {
         thumbnail: r.thumbnail ?? "",
         tag: r.tag,
         author: r.user?.name ?? "Unknown",
+        authorUsername: r.user?.username ?? "",
         mine: String(r.user?._id) === String(userId),
         createdAt: r.createdAt,
         avg: r.ratingCount ? Math.round((r.ratingSum / r.ratingCount) * 10) / 10 : null,

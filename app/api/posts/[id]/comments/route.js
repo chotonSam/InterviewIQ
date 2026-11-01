@@ -5,6 +5,7 @@ import User from "@/lib/models/User";
 import Post from "@/lib/models/Post";
 import Comment from "@/lib/models/Comment";
 import { getSessionUserId } from "@/lib/session";
+import { notify } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -48,10 +49,12 @@ export async function POST(req, { params }) {
 
     await connectDB();
     void User;
-    if (!(await Post.exists({ _id: params.id }))) return NextResponse.json({ error: "Post not found." }, { status: 404 });
+    const target = await Post.findById(params.id).select("user");
+    if (!target) return NextResponse.json({ error: "Post not found." }, { status: 404 });
 
     const created = await Comment.create({ post: params.id, user: userId, text: clean });
     await Post.updateOne({ _id: params.id }, { $inc: { commentCount: 1 } });
+    await notify({ recipient: target.user, actor: userId, type: "comment", post: params.id, text: clean });
 
     const comment = await Comment.findById(created._id).populate("user", "name username image").lean();
     return NextResponse.json({ comment: shape(comment) }, { status: 201 });

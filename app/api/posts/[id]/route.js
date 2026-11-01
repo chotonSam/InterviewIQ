@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import Post from "@/lib/models/Post";
 import Comment from "@/lib/models/Comment";
 import Like from "@/lib/models/Like";
+import Notification from "@/lib/models/Notification";
 import { getSessionUserId } from "@/lib/session";
 
 // DELETE /api/posts/:id → only the author can delete; its comments and likes go with it
@@ -16,7 +17,7 @@ export async function DELETE(_req, { params }) {
     await connectDB();
     const deleted = await Post.findOneAndDelete({ _id: params.id, user: userId });
     if (!deleted) return NextResponse.json({ error: "Post not found, or it isn't yours." }, { status: 404 });
-    await Promise.all([Comment.deleteMany({ post: params.id }), Like.deleteMany({ post: params.id })]);
+    await Promise.all([Comment.deleteMany({ post: params.id }), Like.deleteMany({ post: params.id }), Notification.deleteMany({ post: params.id })]);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[delete post]", err);

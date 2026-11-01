@@ -109,9 +109,9 @@ export default function ChatRoom({ session }) {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-[calc(100dvh_-_4rem_-_env(safe-area-inset-bottom))] flex-col lg:h-screen">
       <header className="shrink-0 border-b border-ink-line bg-ink/90 backdrop-blur">
-        <div className="flex h-16 items-center justify-between gap-4 px-6 lg:px-10">
+        <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
           <div className="min-w-0">
             <p className="font-mono text-xs text-slate-muted">Practice chat · {level}</p>
             <h1 className="mt-1 truncate font-display text-2xl leading-none">{session.topic}</h1>
@@ -120,7 +120,7 @@ export default function ChatRoom({ session }) {
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 lg:px-10">
+      <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl space-y-4">
           {messages.map((m) => <Bubble key={m.id} m={m} />)}
           {sending && (
@@ -132,7 +132,7 @@ export default function ChatRoom({ session }) {
         </div>
       </div>
 
-      <footer className="shrink-0 border-t border-ink-line bg-ink px-6 py-4 lg:px-10">
+      <footer className="shrink-0 border-t border-ink-line bg-ink px-4 py-3 sm:px-6 sm:py-4 lg:px-10">
         <div className="mx-auto max-w-3xl">
           <div className="mb-3 flex flex-wrap gap-2">
             {CHIPS.map((c) => (
@@ -154,7 +154,7 @@ export default function ChatRoom({ session }) {
               Send
             </button>
           </div>
-          <p className="mt-2 font-mono text-xs text-slate-muted">Enter to send · Shift+Enter for a new line</p>
+          <p className="mt-2 hidden font-mono text-xs text-slate-muted sm:block">Enter to send · Shift+Enter for a new line</p>
         </div>
       </footer>
     </div>
