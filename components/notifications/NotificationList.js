@@ -36,7 +36,7 @@ export default function NotificationList({ initial }) {
     return (
       <div className="rounded-2xl border border-dashed border-ink-line px-6 py-14 text-center">
         <p className="mb-1 font-medium">No notifications yet</p>
-        <p className="text-sm text-slate-muted">When someone comments on or likes your post, you will see it here.</p>
+        <p className="text-sm text-slate-muted">When someone comments on or likes your post, or replies to your comment, you will see it here.</p>
       </div>
     );
   }
@@ -64,10 +64,10 @@ export default function NotificationList({ initial }) {
               <span className="min-w-0 flex-1">
                 <span className="block text-sm leading-relaxed">
                   <span className="font-medium">{n.actor.name}</span>{" "}
-                  {n.type === "comment" ? "commented on your post" : "liked your post"}{" "}
+                  {n.type === "reply" ? "replied to your comment on" : n.type === "comment" ? "commented on your post" : "liked your post"}{" "}
                   <span className="text-slate-muted">&ldquo;{n.postTitle}&rdquo;</span>
                 </span>
-                {n.type === "comment" && n.text && (
+                {(n.type === "comment" || n.type === "reply") && n.text && (
                   <span className="mt-1.5 block rounded-lg bg-ink/60 px-3 py-2 text-sm text-slate-muted">{n.text}</span>
                 )}
                 <span className="mt-1.5 block font-mono text-xs text-slate-muted">{timeAgo(n.createdAt)}</span>

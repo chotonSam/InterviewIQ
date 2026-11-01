@@ -3,17 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { HomeIcon, MicIcon, ChatIcon, UsersIcon, MenuIcon, BellIcon } from "@/components/Icons";
+import { ChartIcon, MicIcon, ChatIcon, UsersIcon, MenuIcon } from "@/components/Icons";
 import { avatarUrl } from "@/lib/avatar";
 
+const DashboardIcon = (p) => <ChartIcon width={22} height={22} {...p} />;
+
 const TABS = [
-  { href: "/dashboard", label: "Home", Icon: HomeIcon },
+  { href: "/dashboard", label: "Dashboard", Icon: DashboardIcon },
   { href: "/interview", label: "Interview", Icon: MicIcon },
   { href: "/chat", label: "Chat", Icon: ChatIcon },
   { href: "/community", label: "Community", Icon: UsersIcon },
 ];
 
 const MORE = [
+  { href: "/", label: "Home page" },
   { href: "/notifications", label: "Notifications", badge: true },
   { href: "/history", label: "Interview history" },
   { href: "/resources", label: "Learning resources" },
@@ -25,7 +28,7 @@ export default function MobileNav({ user, unread }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  const isActive = (href) => pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const moreActive = MORE.some((m) => isActive(m.href)) || pathname.startsWith("/u/");
 
   // Close the sheet when you go to another page, or press Escape
