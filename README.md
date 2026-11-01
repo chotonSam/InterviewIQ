@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations. Step 8: Profile + picture upload. Step 9: faster AI, short questions, locked levels, custom fields, practice chat, real history. Step 10: polish — thumbnails, live landing page, new score chart, post delete, profile activity.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations. Step 8: Profile + picture upload. Step 9: faster AI, short questions, locked levels, custom fields, practice chat, real history. Step 10: polish — thumbnails, live landing page, new score chart, post delete, profile activity. Step 11: mobile navigation, notifications, public profiles, profile redesign.
 
 ## Run it
 
@@ -98,9 +98,12 @@ Step 10 polish:
 | POST   | `/api/posts`                       | Create post                      |
 | POST   | `/api/posts/:id/like`              | Toggle like                      |
 | DELETE | `/api/posts/:id`                   | Delete your post                 |
+| GET    | `/api/notifications`               | Your notifications               |
+| POST   | `/api/notifications`               | Mark one / all as read           |
+| GET    | `/api/notifications/unread-count`  | Unread number for the badge      |
 | GET    | `/api/posts/:id/comments`          | List comments (polled for live)  |
 | POST   | `/api/posts/:id/comments`          | Add comment                      |
-| GET    | `/api/resources?page=&type=`       | Paginated resources              |
+| GET    | `/api/resources?page=&type=&tag=&q=&sort=&mine=` | Search, filter, sort, paginate |
 | POST   | `/api/resources`                   | Add resource (video/article)     |
 | DELETE | `/api/resources/:id`               | Delete your resource             |
 | POST   | `/api/resources/:id/rate`          | Rate 1–5 (create or change)      |

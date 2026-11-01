@@ -30,6 +30,7 @@ export default function ProfileForm({ user }) {
 
   const [name, setName] = useState(user.name);
   const [phone, setPhone] = useState(user.phone);
+  const [bio, setBio] = useState(user.bio ?? "");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
@@ -83,9 +84,10 @@ export default function ProfileForm({ user }) {
     setMessage({ type: "", text: "" });
     setSaving(true);
     try {
-      const saved = await patchProfile({ name, phone });
+      const saved = await patchProfile({ name, phone, bio });
       setName(saved.name);
       setPhone(saved.phone);
+      setBio(saved.bio ?? "");
       setMessage({ type: "ok", text: "Profile saved." });
       router.refresh();
     } catch (err) {
@@ -141,6 +143,11 @@ export default function ProfileForm({ user }) {
             <label htmlFor="p-phone" className="mb-2 block text-sm font-medium">Phone</label>
             <input id="p-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={30} placeholder="+880 1XXX XXXXXX" className="field focus-ring" />
           </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="p-bio" className="mb-2 block text-sm font-medium">Bio <span className="font-normal text-slate-muted">(public, {bio.length}/160)</span></label>
+            <textarea id="p-bio" rows={2} value={bio} onChange={(e) => setBio(e.target.value)} maxLength={160}
+              placeholder="e.g. Final-year CSE student preparing for frontend roles" className="field focus-ring resize-none" />
+          </div>
           <div>
             <label htmlFor="p-username" className="mb-2 block text-sm font-medium">Username</label>
             <input id="p-username" value={user.username} disabled className="field opacity-60" />
@@ -150,7 +157,7 @@ export default function ProfileForm({ user }) {
             <input id="p-email" value={user.email} disabled className="field opacity-60" />
           </div>
         </div>
-        <p className="text-xs text-slate-muted">Username and email can&apos;t be changed.</p>
+        <p className="text-xs text-slate-muted">Username and email can&apos;t be changed. Your email and phone are private — other people never see them.</p>
 
         {message.text && (
           <p role={message.type === "error" ? "alert" : "status"} className={`text-sm ${message.type === "error" ? "text-signal-red" : "text-signal-green"}`}>

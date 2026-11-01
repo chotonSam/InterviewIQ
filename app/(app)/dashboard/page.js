@@ -19,18 +19,18 @@ export default async function DashboardPage() {
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-ink-line bg-ink/90 backdrop-blur">
-        <div className="flex h-16 items-center justify-between px-6 lg:px-10">
+        <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
           <div>
             <p className="font-mono text-xs text-slate-muted">{today}</p>
             <h1 className="mt-1 font-display text-2xl leading-none">Welcome back, {user.name.split(" ")[0]}</h1>
           </div>
           <Link href="/interview" className="btn-primary px-5 py-2.5 text-sm">
-            Start a mock interview <span aria-hidden="true">→</span>
+            <span className="hidden sm:inline">Start a mock interview</span><span className="sm:hidden">New interview</span> <span aria-hidden="true">→</span>
           </Link>
         </div>
       </header>
 
-      <main className="space-y-10 px-6 py-10 lg:px-10">
+      <main className="space-y-8 px-4 py-6 sm:space-y-10 sm:px-6 sm:py-10 lg:px-10">
         <NextUp nextUp={data.nextUp} />
         <StatCards stats={data.stats} />
         <section className="grid gap-6 lg:grid-cols-3">

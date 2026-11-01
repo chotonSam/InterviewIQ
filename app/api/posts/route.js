@@ -4,6 +4,7 @@ import User from "@/lib/models/User";
 import Post, { POST_TAGS } from "@/lib/models/Post";
 import Like from "@/lib/models/Like";
 import { getSessionUserId } from "@/lib/session";
+import { serializePost } from "@/lib/posts";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 5;
@@ -34,20 +35,7 @@ export async function GET(req) {
     return NextResponse.json({
       page,
       totalPages,
-      posts: posts.map((p) => ({
-        id: String(p._id),
-        author: p.user?.name ?? "Unknown",
-        username: p.user?.username ?? "",
-        authorImage: p.user?.image ?? "",
-        mine: String(p.user?._id) === String(userId),
-        title: p.title,
-        body: p.body,
-        tag: p.tag,
-        createdAt: p.createdAt,
-        likes: p.likeCount,
-        comments: p.commentCount,
-        liked: likedSet.has(String(p._id)),
-      })),
+      posts: posts.map((p) => serializePost(p, userId, likedSet)),
     });
   } catch (err) {
     console.error("[list posts]", err);

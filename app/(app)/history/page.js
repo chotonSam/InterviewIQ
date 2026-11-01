@@ -49,7 +49,7 @@ export default async function HistoryPage({ searchParams }) {
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-ink-line bg-ink/90 backdrop-blur">
-        <div className="flex h-16 items-center justify-between px-6 lg:px-10">
+        <div className="flex min-h-16 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
           <div>
             <p className="font-mono text-xs text-slate-muted">{total} {total === 1 ? "interview" : "interviews"} so far</p>
             <h1 className="mt-1 font-display text-2xl leading-none">Interview history</h1>
@@ -58,7 +58,7 @@ export default async function HistoryPage({ searchParams }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl space-y-10 px-6 py-10 lg:px-10">
+      <main className="mx-auto max-w-4xl space-y-8 px-4 py-6 sm:space-y-10 sm:px-6 sm:py-10 lg:px-10">
         {total === 0 ? (
           <div className="rounded-2xl border border-ink-line bg-ink-soft/40 px-6 py-12 text-center">
             <p className="mb-4 text-sm text-slate-muted">No interviews yet. Your history and level progress will show up here.</p>

@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import Post from "@/lib/models/Post";
 import Like from "@/lib/models/Like";
 import { getSessionUserId } from "@/lib/session";
+import { notify } from "@/lib/notify";
 
 // POST /api/posts/:id/like → toggles your like, returns { liked, likes }
 export async function POST(_req, { params }) {
@@ -13,7 +14,8 @@ export async function POST(_req, { params }) {
 
   try {
     await connectDB();
-    if (!(await Post.exists({ _id: params.id }))) return NextResponse.json({ error: "Post not found." }, { status: 404 });
+    const target = await Post.findById(params.id).select("user");
+    if (!target) return NextResponse.json({ error: "Post not found." }, { status: 404 });
 
     let liked;
     try {
@@ -26,6 +28,8 @@ export async function POST(_req, { params }) {
       if (!removed) return NextResponse.json({ error: "Please try again." }, { status: 409 });
       liked = false;
     }
+
+    if (liked) await notify({ recipient: target.user, actor: userId, type: "like", post: params.id }); // only when liked, not un-liked
 
     const post = await Post.findByIdAndUpdate(params.id, { $inc: { likeCount: liked ? 1 : -1 } }, { new: true }).select("likeCount");
     return NextResponse.json({ liked, likes: Math.max(0, post.likeCount) });

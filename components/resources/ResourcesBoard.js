@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { timeAgo } from "@/lib/time";
 import { RESOURCE_TAGS } from "@/lib/resources";
 import { uploadImage } from "@/lib/upload";
 import Thumb from "@/components/resources/Thumb";
+import { SearchIcon } from "@/components/Icons";
 
 async function api(url, options) {
   const res = await fetch(url, options);
@@ -68,7 +70,14 @@ function VideoPlayer({ resource }) {
   );
 }
 
-function ResourceCard({ r, onRate, onDelete }) {
+// Marks the words you searched for
+function Highlight({ text, q }) {
+  if (!q) return text;
+  const rx = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+  return text.split(rx).map((part, i) => (i % 2 === 1 ? <mark key={i} className="rounded bg-indigo/30 px-0.5 text-paper">{part}</mark> : part));
+}
+
+function ResourceCard({ r, q, onRate, onDelete }) {
   let host = "";
   try { host = new URL(r.url).hostname.replace(/^www\./, ""); } catch {}
 
@@ -91,10 +100,10 @@ function ResourceCard({ r, onRate, onDelete }) {
 
         <h2 className="font-medium leading-snug">
           {r.type === "article" ? (
-            <a href={r.url} target="_blank" rel="noopener noreferrer nofollow" className="focus-ring rounded hover:text-indigo">{r.title} ↗</a>
-          ) : r.title}
+            <a href={r.url} target="_blank" rel="noopener noreferrer nofollow" className="focus-ring rounded hover:text-indigo"><Highlight text={r.title} q={q} /> ↗</a>
+          ) : <Highlight text={r.title} q={q} />}
         </h2>
-        {r.description && <p className="mt-2 text-sm leading-relaxed text-slate-muted">{r.description}</p>}
+        {r.description && <p className="mt-2 text-sm leading-relaxed text-slate-muted"><Highlight text={r.description} q={q} /></p>}
 
         <div className="mt-auto pt-5">
           <div className="flex items-center justify-between">
@@ -104,7 +113,7 @@ function ResourceCard({ r, onRate, onDelete }) {
             </p>
           </div>
           <div className="mt-3 flex items-center justify-between font-mono text-xs text-slate-muted">
-            <span>{r.mine ? "Added by you" : `Added by ${r.author}`} · {timeAgo(r.createdAt)}</span>
+            <span>{r.mine ? "Added by you" : (<>Added by <Link href={`/u/${r.authorUsername}`} className="focus-ring rounded text-paper/80 hover:text-indigo">{r.author}</Link></>)} · {timeAgo(r.createdAt)}</span>
             {r.mine && (
               <button type="button" onClick={() => onDelete(r.id)} className="focus-ring rounded text-signal-red/80 transition-colors hover:text-signal-red">Delete</button>
             )}
@@ -115,35 +124,82 @@ function ResourceCard({ r, onRate, onDelete }) {
   );
 }
 
+const SORTS = [["new", "Newest"], ["top", "Top rated"], ["popular", "Most rated"]];
+const TYPES = [["all", "All"], ["video", "Videos"], ["article", "Articles"]];
+
 export default function ResourcesBoard() {
-  const [items, setItems] = useState(null); // null = loading
+  const [items, setItems] = useState(null); // null = first load
+  const [busy, setBusy] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [type, setType] = useState("all");
+  const [total, setTotal] = useState(0);
+  const [tagCounts, setTagCounts] = useState({});
   const [loadError, setLoadError] = useState("");
 
+  // ---- filters ----
+  const [q, setQ] = useState("");            // what is typed
+  const [search, setSearch] = useState("");  // what is searched (after a short pause)
+  const [tag, setTag] = useState("");        // "" = all topics
+  const [type, setType] = useState("all");
+  const [sort, setSort] = useState("new");
+  const [mine, setMine] = useState(false);
+
+  const hasFilters = Boolean(search || tag || type !== "all" || sort !== "new" || mine);
+
+  // ---- add form ----
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", url: "", tag: "General", description: "", thumbnail: "" });
   const [thumbBusy, setThumbBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
 
-  const load = useCallback(async (p, t) => {
+  // Wait until the person stops typing before searching
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(q.trim()), 350);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  const filtersRef = useRef({});
+  filtersRef.current = { search, tag, type, sort, mine };
+  const latest = useRef(0);
+
+  const load = useCallback(async (p) => {
+    const id = ++latest.current; // ignore answers that arrive after a newer request
+    const f = filtersRef.current;
+    const qs = new URLSearchParams({ page: String(p) });
+    if (f.type !== "all") qs.set("type", f.type);
+    if (f.tag) qs.set("tag", f.tag);
+    if (f.search) qs.set("q", f.search);
+    if (f.sort !== "new") qs.set("sort", f.sort);
+    if (f.mine) qs.set("mine", "1");
+
+    setBusy(true);
     try {
       setLoadError("");
-      const data = await api(`/api/resources?page=${p}${t !== "all" ? `&type=${t}` : ""}`);
+      const data = await api(`/api/resources?${qs}`);
+      if (id !== latest.current) return;
       setItems(data.resources);
       setTotalPages(data.totalPages);
       setPage(data.page);
+      setTotal(data.total);
+      setTagCounts(data.tagCounts ?? {});
     } catch (err) {
+      if (id !== latest.current) return;
       setLoadError(err.message);
       setItems((cur) => cur ?? []);
+    } finally {
+      if (id === latest.current) setBusy(false);
     }
   }, []);
 
+  // any filter change → back to page 1
   useEffect(() => {
-    load(1, type);
-  }, [load, type]);
+    load(1);
+  }, [load, search, tag, type, sort, mine]);
+
+  function clearFilters() {
+    setQ(""); setSearch(""); setTag(""); setType("all"); setSort("new"); setMine(false);
+  }
 
   async function addResource(e) {
     e.preventDefault();
@@ -153,8 +209,8 @@ export default function ResourcesBoard() {
       await postJSON("/api/resources", form);
       setForm({ title: "", url: "", tag: "General", description: "", thumbnail: "" });
       setShowForm(false);
-      if (type !== "all") setType("all");
-      else await load(1, "all");
+      if (hasFilters) clearFilters(); // so the new resource is visible (the filter change reloads the list)
+      else await load(1);
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -174,7 +230,7 @@ export default function ResourcesBoard() {
       const d = await postJSON(`/api/resources/${id}/rate`, { value });
       setItems((all) => all.map((r) => (r.id === id ? { ...r, myRating: d.myRating, ratingCount: d.ratingCount, avg: d.avg } : r)));
     } catch {
-      load(page, type);
+      load(page);
     }
   }
 
@@ -182,7 +238,7 @@ export default function ResourcesBoard() {
     if (!window.confirm("Delete this resource? This can't be undone.")) return;
     try {
       await api(`/api/resources/${id}`, { method: "DELETE" });
-      await load(items.length === 1 && page > 1 ? page - 1 : page, type);
+      await load(items.length === 1 && page > 1 ? page - 1 : page);
     } catch (err) {
       setLoadError(err.message);
     }
@@ -205,22 +261,77 @@ export default function ResourcesBoard() {
       setThumbBusy(false);
     }
   }
-  const tabs = [["all", "All"], ["video", "Videos"], ["article", "Articles"]];
+
+  const allTopicsCount = Object.values(tagCounts).reduce((a, b) => a + b, 0);
+  const chip = (active) =>
+    `focus-ring shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
+      active ? "border-indigo bg-indigo text-white" : "border-ink-line text-slate-muted hover:border-indigo/60 hover:text-paper"}`;
 
   return (
-    <main className="mx-auto max-w-6xl space-y-8 px-6 py-10 lg:px-10">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div role="tablist" aria-label="Filter resources" className="flex items-center gap-1 rounded-full border border-ink-line bg-ink-soft/40 p-1 text-sm">
-          {tabs.map(([id, label]) => (
+    <main className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:space-y-7 sm:px-6 sm:py-10 lg:px-10">
+      {/* ---- search + add ---- */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative min-w-0 flex-1 basis-64">
+          <label htmlFor="res-search" className="sr-only">Search resources</label>
+          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-muted" />
+          <input id="res-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} maxLength={60}
+            placeholder="Search by title or description…" autoComplete="off"
+            className="field focus-ring pl-11 pr-10 [&::-webkit-search-cancel-button]:hidden" />
+          {q && (
+            <button type="button" onClick={() => { setQ(""); setSearch(""); }} aria-label="Clear search"
+              className="focus-ring absolute right-3 top-1/2 -translate-y-1/2 rounded px-1 text-slate-muted hover:text-paper">✕</button>
+          )}
+        </div>
+        <button type="button" onClick={() => setShowForm((s) => !s)} aria-expanded={showForm} className="btn-primary px-5 py-3 text-sm">
+          {showForm ? "Cancel" : "+ Add a resource"}
+        </button>
+      </div>
+
+      {/* ---- topics ---- */}
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Filter by topic">
+        <button type="button" aria-pressed={tag === ""} onClick={() => setTag("")} className={chip(tag === "")}>
+          All topics <span className="ml-1 font-mono text-xs opacity-70">{allTopicsCount}</span>
+        </button>
+        {RESOURCE_TAGS.map((t) => (
+          <button key={t} type="button" aria-pressed={tag === t} onClick={() => setTag(tag === t ? "" : t)}
+            className={`${chip(tag === t)} ${tag !== t && !(tagCounts[t] > 0) ? "opacity-50" : ""}`}>
+            {t} <span className="ml-1 font-mono text-xs opacity-70">{tagCounts[t] ?? 0}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ---- type / sort / mine ---- */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <div role="tablist" aria-label="Type" className="flex items-center gap-1 rounded-full border border-ink-line bg-ink-soft/40 p-1 text-sm">
+          {TYPES.map(([id, label]) => (
             <button key={id} type="button" role="tab" aria-selected={type === id} onClick={() => setType(id)}
               className={`focus-ring rounded-full px-4 py-1.5 transition-colors ${type === id ? "bg-indigo text-white" : "text-slate-muted hover:text-paper"}`}>
               {label}
             </button>
           ))}
         </div>
-        <button type="button" onClick={() => setShowForm((s) => !s)} aria-expanded={showForm} className="btn-primary px-5 py-2.5 text-sm">
-          {showForm ? "Cancel" : "+ Add a resource"}
-        </button>
+
+        <label className="flex items-center gap-2 text-sm text-slate-muted">
+          <span className="sr-only sm:not-sr-only">Sort</span>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className="field focus-ring w-auto py-2 pr-8" aria-label="Sort resources">
+            {SORTS.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+          </select>
+        </label>
+
+        <button type="button" aria-pressed={mine} onClick={() => setMine((m) => !m)} className={chip(mine)}>Added by me</button>
+      </div>
+
+      {/* ---- result summary ---- */}
+      <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-slate-muted" aria-live="polite">
+        <p>
+          {items === null ? "Loading…" : `${total} ${total === 1 ? "resource" : "resources"}`}
+          {search && <> for &ldquo;<span className="text-paper">{search}</span>&rdquo;</>}
+          {tag && <> in <span className="text-paper">{tag}</span></>}
+          {busy && items !== null && <span className="ml-2">· updating…</span>}
+        </p>
+        {hasFilters && (
+          <button type="button" onClick={clearFilters} className="focus-ring rounded text-indigo transition-colors hover:text-paper">Clear all filters</button>
+        )}
       </div>
 
       {showForm && (
@@ -270,27 +381,35 @@ export default function ResourcesBoard() {
       )}
 
       {loadError && <p role="alert" className="rounded-lg border border-signal-red/40 bg-signal-red/10 px-4 py-3 text-sm text-signal-red">{loadError}</p>}
-      {items === null && <p className="text-center text-sm text-slate-muted">Loading resources…</p>}
+
       {items?.length === 0 && !loadError && (
-        <p className="rounded-2xl border border-ink-line bg-ink-soft/40 px-6 py-10 text-center text-sm text-slate-muted">
-          Nothing here yet. Add the first {type === "video" ? "video" : type === "article" ? "article" : "resource"}.
-        </p>
+        <div className="rounded-2xl border border-dashed border-ink-line px-6 py-12 text-center">
+          {hasFilters ? (
+            <>
+              <p className="mb-1 font-medium">No resources match your search</p>
+              <p className="mb-4 text-sm text-slate-muted">Try a different word, another topic, or remove a filter.</p>
+              <button type="button" onClick={clearFilters} className="btn-primary px-5 py-2.5 text-sm">Clear all filters</button>
+            </>
+          ) : (
+            <p className="text-sm text-slate-muted">Nothing here yet. Add the first resource.</p>
+          )}
+        </div>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {items?.map((r) => <ResourceCard key={r.id} r={r} onRate={rate} onDelete={remove} />)}
+      <div className={`grid gap-6 transition-opacity sm:grid-cols-2 lg:grid-cols-3 ${busy ? "opacity-60" : ""}`}>
+        {items?.map((r) => <ResourceCard key={r.id} r={r} q={search} onRate={rate} onDelete={remove} />)}
       </div>
 
       {totalPages > 1 && (
         <nav aria-label="Pagination" className="flex items-center justify-between font-mono text-sm">
-          <button type="button" onClick={() => load(page - 1, type)} disabled={page === 1} className="focus-ring rounded px-3 py-2 text-slate-muted transition-colors hover:text-paper disabled:opacity-40">← Previous</button>
+          <button type="button" onClick={() => load(page - 1)} disabled={page === 1} className="focus-ring rounded px-3 py-2 text-slate-muted transition-colors hover:text-paper disabled:opacity-40">← Previous</button>
           <div className="flex items-center gap-2">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <button key={n} type="button" onClick={() => load(n, type)} aria-current={n === page ? "page" : undefined}
+              <button key={n} type="button" onClick={() => load(n)} aria-current={n === page ? "page" : undefined}
                 className={`focus-ring h-9 w-9 rounded-lg transition-colors ${n === page ? "bg-indigo text-white" : "text-slate-muted hover:bg-ink-line/40 hover:text-paper"}`}>{n}</button>
             ))}
           </div>
-          <button type="button" onClick={() => load(page + 1, type)} disabled={page === totalPages} className="focus-ring rounded px-3 py-2 text-slate-muted transition-colors hover:text-paper disabled:opacity-40">Next →</button>
+          <button type="button" onClick={() => load(page + 1)} disabled={page === totalPages} className="focus-ring rounded px-3 py-2 text-slate-muted transition-colors hover:text-paper disabled:opacity-40">Next →</button>
         </nav>
       )}
     </main>
