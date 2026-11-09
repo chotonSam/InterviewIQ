@@ -15,7 +15,8 @@
     "mongoose": "^8.7.0",
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.3",
-    "gsap": "^3.12.5"
+    "gsap": "^3.12.5",
+    "nodemailer": "^6.9.16"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

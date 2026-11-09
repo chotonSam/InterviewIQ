@@ -5,6 +5,7 @@ import Post, { POST_TAGS } from "@/lib/models/Post";
 import Like from "@/lib/models/Like";
 import { getSessionUserId } from "@/lib/session";
 import { serializePost } from "@/lib/posts";
+import { verifiedOrResponse } from "@/lib/requireVerified";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 5;
@@ -56,6 +57,9 @@ export async function POST(req) {
 
     if (!title || title.length > 120) return NextResponse.json({ error: "Title is required (max 120 characters)." }, { status: 400 });
     if (!body || body.length > 2000) return NextResponse.json({ error: "Post text is required (max 2000 characters)." }, { status: 400 });
+
+    const blocked = await verifiedOrResponse(userId);
+    if (blocked) return blocked;
 
     await connectDB();
     const post = await Post.create({ user: userId, title, body, tag });

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
 import { createSession } from "@/lib/session";
+import { sendVerificationEmail } from "@/lib/verification";
 
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/i;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,7 +31,15 @@ export async function POST(req) {
     const user = await User.create({ name, username, email, phone, passwordHash });
 
     await createSession(user._id);
-    return NextResponse.json({ ok: true }, { status: 201 });
+
+    // Email the verification link. A mail problem must never stop the account from being created.
+    let emailSent = false;
+    try {
+      emailSent = Boolean((await sendVerificationEmail(user._id)).sent);
+    } catch (err) {
+      console.error("[register / verification email]", err);
+    }
+    return NextResponse.json({ ok: true, emailSent }, { status: 201 });
   } catch (err) {
     if (err?.code === 11000) return NextResponse.json({ error: "Username or email already in use." }, { status: 409 });
     console.error("[register]", err);

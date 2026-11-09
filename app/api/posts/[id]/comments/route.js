@@ -6,6 +6,7 @@ import Post from "@/lib/models/Post";
 import Comment from "@/lib/models/Comment";
 import { getSessionUserId } from "@/lib/session";
 import { notify } from "@/lib/notify";
+import { verifiedOrResponse } from "@/lib/requireVerified";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,9 @@ export async function POST(req, { params }) {
     if (clean.length > 500) return NextResponse.json({ error: "Comment is too long (max 500 characters)." }, { status: 400 });
 
     if (parentId && !mongoose.isValidObjectId(parentId)) return NextResponse.json({ error: "Invalid comment." }, { status: 400 });
+
+    const blocked = await verifiedOrResponse(userId);
+    if (blocked) return blocked;
 
     await connectDB();
     void User;

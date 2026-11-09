@@ -7,6 +7,7 @@ import Rating from "@/lib/models/Rating";
 import { getSessionUserId } from "@/lib/session";
 import { RESOURCE_TAGS, parseYouTubeId, cleanUrl } from "@/lib/resources";
 import { fetchPreviewImage } from "@/lib/og";
+import { verifiedOrResponse } from "@/lib/requireVerified";
 import { isCloudinaryImage } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
@@ -129,6 +130,9 @@ export async function POST(req) {
     if (!url) return NextResponse.json({ error: "Enter a valid link starting with http:// or https://" }, { status: 400 });
 
     if (customThumb && !isCloudinaryImage(customThumb)) return NextResponse.json({ error: "Invalid thumbnail image." }, { status: 400 });
+
+    const blocked = await verifiedOrResponse(userId);
+    if (blocked) return blocked;
 
     const youtubeId = parseYouTubeId(url);
     // Thumbnail: the one the user uploaded, else (articles) the page's own preview image. Videos use YouTube's.

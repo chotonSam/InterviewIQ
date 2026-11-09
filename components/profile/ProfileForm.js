@@ -155,6 +155,9 @@ export default function ProfileForm({ user }) {
           <div>
             <label htmlFor="p-email" className="mb-2 block text-sm font-medium">Email</label>
             <input id="p-email" value={user.email} disabled className="field opacity-60" />
+            <p className={`mt-1.5 font-mono text-xs ${user.emailVerified ? "text-signal-green" : "text-signal-amber"}`}>
+              {user.emailVerified ? "✓ Email verified" : "Not verified yet — enter the code from the banner at the top"}
+            </p>
           </div>
         </div>
         <p className="text-xs text-slate-muted">Username and email can&apos;t be changed. Your email and phone are private — other people never see them.</p>
