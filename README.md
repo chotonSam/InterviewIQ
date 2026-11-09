@@ -1,7 +1,7 @@
 # InterviewIQ — Frontend (Next.js + Tailwind CSS)
 
 AI-powered interview preparation platform — University Web Technology project.
-Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations. Step 8: Profile + picture upload. Step 9: faster AI, short questions, locked levels, custom fields, practice chat, real history. Step 10: polish — thumbnails, live landing page, new score chart, post delete, profile activity. Step 11: mobile navigation, notifications, public profiles, profile redesign.
+Step 1: HTML/Tailwind designs. Step 2: converted to Next.js. Step 3: Community page (UI). Step 4: backend — MongoDB, auth, Gemini interview. Step 5: Community backend. Step 6: Learning resources. Step 7: GSAP animations. Step 8: Profile + picture upload. Step 9: faster AI, short questions, locked levels, custom fields, practice chat, real history. Step 10: polish — thumbnails, live landing page, new score chart, post delete, profile activity. Step 11: mobile navigation, notifications, replies, public profiles, profile redesign, resource search. Step 12: email verification (OTP + link).
 
 ## Run it
 
@@ -84,6 +84,15 @@ Step 10 polish:
 - Community: delete your own posts. Profile: "My posts" and "My resources" tabs.
 
 
+### Email verification (free, Gmail SMTP + Nodemailer)
+
+- At sign-up an email is sent with a **6-digit code (OTP)** and a **link**; either one verifies the account.
+  - Code: valid 10 minutes, 5 tries, stored only as a keyed hash (HMAC with AUTH_SECRET). Typed into the yellow banner at the top of the app.
+  - Link: valid 24 hours, single use; only a SHA-256 hash of the token is stored.
+- "Resend email" is limited to 1 per minute and 5 per day per account, and only mails the account's own address.
+- Unverified users see the banner and cannot post, comment, reply or add resources (set `REQUIRE_VERIFIED_EMAIL=false` to switch the block off). Verified users get a "Verified" badge on their profile.
+- Setup: Gmail account with 2-Step Verification -> App Password -> `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`, `APP_URL` in `.env.local`, then restart. With no SMTP settings (development only) the code and link are printed in the server terminal and shown in the banner.
+
 ## API routes
 
 | Method | Route                              | Purpose                          |
@@ -108,6 +117,10 @@ Step 10 polish:
 | DELETE | `/api/resources/:id`               | Delete your resource             |
 | POST   | `/api/resources/:id/rate`          | Rate 1–5 (create or change)      |
 | PATCH  | `/api/profile`                     | Update name / phone / picture    |
+| POST   | `/api/auth/verify-email`           | Confirm the emailed link token   |
+| POST   | `/api/auth/verify-code`            | Confirm the 6-digit code (OTP)   |
+| POST   | `/api/auth/resend-verification`    | Send a new verification email    |
+| POST   | `/api/auth/resend-verification`    | Send a new verification email    |
 | POST   | `/api/chat`                        | Start a practice chat            |
 | POST   | `/api/chat/:id`                    | Send a message, get coach reply  |
 | DELETE | `/api/chat/:id`                    | Delete a chat                    |
@@ -121,6 +134,6 @@ USER 1—* CHAT_SESSION (messages embedded).
 
 ## Next steps (optional)
 
-1. Email verification (needs an email service such as Resend / Nodemailer)
+1. Password reset by email (the mail setup is already in place)
 2. Phone verification (needs an SMS provider — costs money, can be skipped)
 3. Resource moderation (suggest → admin approves)

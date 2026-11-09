@@ -27,7 +27,12 @@ export default function ProfileHeader({ profile }) {
           )}
         </div>
 
-        <h2 className="mt-4 font-display text-3xl leading-tight sm:text-4xl">{user.name}</h2>
+        <h2 className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-3xl leading-tight sm:text-4xl">
+          {user.name}
+          {user.verified && (
+            <span className="rounded-full bg-signal-green/15 px-2.5 py-1 font-body text-xs font-medium text-signal-green" title="This person confirmed their email address">✓ Verified</span>
+          )}
+        </h2>
         <p className="mt-1 font-mono text-sm text-slate-muted">@{user.username} · Joined {user.joined}</p>
         {user.bio && <p className="mt-4 max-w-2xl leading-relaxed text-paper/90">{user.bio}</p>}
 

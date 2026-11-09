@@ -16,7 +16,7 @@ export default async function MyProfilePage() {
   if (!profile) notFound();
 
   await connectDB();
-  const priv = await User.findById(userId).select("email phone").lean(); // private details, only for the owner
+  const priv = await User.findById(userId).select("email phone emailVerified").lean(); // private details, only for the owner
 
   return (
     <>
@@ -40,7 +40,7 @@ export default async function MyProfilePage() {
           </summary>
           <div className="px-4 sm:px-6">
             <ProfileForm
-              user={{ name: profile.user.name, username: profile.user.username, email: priv?.email ?? "", phone: priv?.phone ?? "", image: profile.user.image, bio: profile.user.bio }}
+              user={{ name: profile.user.name, username: profile.user.username, email: priv?.email ?? "", phone: priv?.phone ?? "", image: profile.user.image, bio: profile.user.bio, emailVerified: Boolean(priv?.emailVerified) }}
             />
           </div>
         </details>
