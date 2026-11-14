@@ -40,6 +40,8 @@ export default async function InterviewPage({ params }) {
     difficulty: interview.difficulty,
     completed: interview.status === "completed",
     score: interview.score,
+    timed: Boolean(interview.timed),
+    limit: interview.secondsPerQuestion ?? 0,
     nextLevel: nextLevelAfter(interview.difficulty),
     // what the "start next level" button sends to /api/interviews
     startPayload: isCustom ? { customTopic: topic } : { categoryId: String(interview.category?._id) },
@@ -52,6 +54,9 @@ export default async function InterviewPage({ params }) {
         code: q.code ?? "",
         kind: q.kind ?? "quick",
         answer: a?.text ?? "",
+        timeSpent: q.timeSpent ?? 0,           // active seconds so far (unanswered question)
+        answerTime: a?.timeSpent ?? 0,         // final seconds (answered question)
+        timedOut: Boolean(a?.timedOut),
         feedback: f ? { score: f.score, strengths: f.strengths, improvements: f.improvements, suggested: f.suggested } : null,
       };
     }),

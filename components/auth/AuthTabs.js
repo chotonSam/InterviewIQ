@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckIcon } from "@/components/Icons";
 
@@ -84,7 +85,10 @@ function LoginForm({ onSwitch }) {
           <input id="login-email" name="email" type="email" placeholder="you@example.com" className="field focus-ring" required />
         </div>
         <div>
-          <label htmlFor="login-password" className="mb-2 block text-sm font-medium">Password</label>
+          <div className="mb-2 flex items-center justify-between">
+            <label htmlFor="login-password" className="block text-sm font-medium">Password</label>
+            <Link href="/forgot-password" className="focus-ring rounded text-xs text-indigo transition-colors hover:text-paper">Forgot password?</Link>
+          </div>
           <input id="login-password" name="password" type="password" placeholder="••••••••" className="field focus-ring" required />
         </div>
         <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 disabled:opacity-60">

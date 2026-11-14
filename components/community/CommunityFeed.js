@@ -1,7 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PostCard, api, postJSON } from "@/components/community/PostCard";
+import TopicPicker from "@/components/TopicPicker";
+import TopicChips from "@/components/TopicChips";
 
 const TAGS = ["Experience", "Question", "Frontend", "Backend", "System Design", "HR / Behavioral", "Resources"];
 
@@ -10,29 +12,44 @@ export default function CommunityFeed() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadError, setLoadError] = useState("");
+  const [filterTag, setFilterTag] = useState(""); // "" = all topics
+  const [tagCounts, setTagCounts] = useState({});
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [tag, setTag] = useState("Experience");
+  const [topics, setTopics] = useState([]); // topics other people typed (suggestions)
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState("");
 
+  const filterRef = useRef("");
+  filterRef.current = filterTag;
+  const latest = useRef(0);
+
   const load = useCallback(async (p) => {
+    const id = ++latest.current; // ignore answers that arrive after a newer request
+    const qs = new URLSearchParams({ page: String(p) });
+    if (filterRef.current) qs.set("tag", filterRef.current);
     try {
       setLoadError("");
-      const data = await api(`/api/posts?page=${p}`);
+      const data = await api(`/api/posts?${qs}`);
+      if (id !== latest.current) return;
       setPosts(data.posts);
+      setTagCounts(data.tagCounts ?? {});
+      setTopics(data.topics ?? []);
       setTotalPages(data.totalPages);
       setPage(data.page);
     } catch (err) {
+      if (id !== latest.current) return;
       setLoadError(err.message);
       setPosts((cur) => cur ?? []);
     }
   }, []);
 
+  // choosing another topic (or clearing it) starts again from page 1
   useEffect(() => {
     load(1);
-  }, [load]);
+  }, [load, filterTag]);
 
   async function createPost(e) {
     e.preventDefault();
@@ -42,7 +59,9 @@ export default function CommunityFeed() {
       await postJSON("/api/posts", { title, body, tag });
       setTitle("");
       setBody("");
-      await load(1);
+      setTag("Experience");
+      if (filterTag) setFilterTag(""); // show everything, so your new post is visible (the change reloads the list)
+      else await load(1);
     } catch (err) {
       setPostError(err.message);
     } finally {
@@ -88,27 +107,37 @@ export default function CommunityFeed() {
 
         {postError && <p role="alert" className="mt-3 text-sm text-signal-red">{postError}</p>}
 
-        <div className="mt-4 flex items-center justify-between gap-4">
-          <div>
-            <label htmlFor="post-tag" className="sr-only">Topic</label>
-            <select id="post-tag" value={tag} onChange={(e) => setTag(e.target.value)} className="field focus-ring w-auto py-2">
-              {TAGS.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+          <div className="min-w-0 flex-1 sm:max-w-xs">
+            <TopicPicker id="post-tag" value={tag} onChange={setTag} presets={TAGS} suggestions={topics} />
           </div>
-          <button type="submit" disabled={!title.trim() || !body.trim() || posting}
+          <button type="submit" disabled={!title.trim() || !body.trim() || !tag.trim() || posting}
             className="btn-primary px-6 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-50">
             {posting ? "Publishing…" : "Publish post"}
           </button>
         </div>
       </form>
 
+      <section aria-label="Posts">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="font-medium">{filterTag ? <>Posts about <span className="text-indigo">{filterTag}</span></> : "All posts"}</h2>
+          {filterTag && <button type="button" onClick={() => setFilterTag("")} className="focus-ring rounded font-mono text-xs text-indigo transition-colors hover:text-paper">Clear filter</button>}
+        </div>
+        <TopicChips presets={TAGS} counts={tagCounts} selected={filterTag} onSelect={setFilterTag} />
+      </section>
+
       {loadError && <p role="alert" className="rounded-lg border border-signal-red/40 bg-signal-red/10 px-4 py-3 text-sm text-signal-red">{loadError}</p>}
 
       {posts === null && <p className="text-center text-sm text-slate-muted">Loading posts…</p>}
       {posts?.length === 0 && !loadError && (
-        <p className="rounded-2xl border border-ink-line bg-ink-soft/40 px-6 py-10 text-center text-sm text-slate-muted">
-          No posts yet. Be the first to share something.
-        </p>
+        <div className="rounded-2xl border border-ink-line bg-ink-soft/40 px-6 py-10 text-center text-sm text-slate-muted">
+          {filterTag ? (
+            <>
+              <p className="mb-3">No posts about &ldquo;{filterTag}&rdquo; yet.</p>
+              <button type="button" onClick={() => setFilterTag("")} className="btn-primary px-5 py-2 text-sm">Show all posts</button>
+            </>
+          ) : "No posts yet. Be the first to share something."}
+        </div>
       )}
 
       <div className="space-y-5">

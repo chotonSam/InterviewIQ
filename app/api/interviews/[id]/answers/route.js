@@ -16,19 +16,25 @@ export async function POST(req, { params }) {
   if (!userId) return NextResponse.json({ error: "Please log in." }, { status: 401 });
 
   try {
-    const { questionId, text } = await req.json();
+    const { questionId, text, timeSpent, timedOut } = await req.json();
     const answerText = String(text ?? "").trim();
+    const seconds = Number.isFinite(Number(timeSpent)) ? Math.max(0, Math.min(3600, Math.round(Number(timeSpent)))) : 0;
 
     if (!mongoose.isValidObjectId(params.id) || !mongoose.isValidObjectId(questionId)) {
       return NextResponse.json({ error: "Invalid request." }, { status: 400 });
     }
-    if (!answerText) return NextResponse.json({ error: "Write an answer first." }, { status: 400 });
+    if (!answerText && timedOut !== true) return NextResponse.json({ error: "Write an answer first." }, { status: 400 });
     if (answerText.length > 2000) return NextResponse.json({ error: "Answer is too long (max 2000 characters)." }, { status: 400 });
 
     await connectDB();
 
     const interview = await Interview.findOne({ _id: params.id, user: userId }).populate("category", "name");
     if (!interview) return NextResponse.json({ error: "Interview not found." }, { status: 404 });
+
+    // "time ran out" only means something in a timed interview — an empty answer is only allowed then
+    const outOfTime = timedOut === true && interview.timed === true;
+    if (!answerText && !outOfTime) return NextResponse.json({ error: "Write an answer first." }, { status: 400 });
+    const finalText = answerText || "(no answer — time ran out)";
 
     const question = await Question.findOne({ _id: questionId, interview: interview._id });
     if (!question) return NextResponse.json({ error: "Question not found." }, { status: 404 });
@@ -45,7 +51,7 @@ export async function POST(req, { params }) {
         difficulty: interview.difficulty,
         question: question.text,
         code: question.code,
-        answer: answerText,
+        answer: finalText,
       });
     } catch (err) {
       console.error("[evaluate / gemini]", err);
@@ -53,7 +59,7 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: "The AI could not evaluate your answer right now. Please try again." + hint }, { status: 502 });
     }
 
-    const answer = await Answer.create({ interview: interview._id, question: question._id, user: userId, text: answerText });
+    const answer = await Answer.create({ interview: interview._id, question: question._id, user: userId, text: finalText, timeSpent: seconds, timedOut: outOfTime });
     await Feedback.create({ answer: answer._id, interview: interview._id, question: question._id, ...result });
 
     // Completed when every question has feedback → interview score = average
@@ -75,6 +81,8 @@ export async function POST(req, { params }) {
 
     return NextResponse.json({
       feedback: result,
+      timeSpent: seconds,
+      timedOut: outOfTime,
       completed,
       interviewScore,
       nextLevel: completed ? nextLevelAfter(interview.difficulty) : null, // what to suggest next (Easy→Medium→Hard)

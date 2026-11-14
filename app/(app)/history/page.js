@@ -96,7 +96,7 @@ export default async function HistoryPage({ searchParams }) {
                         <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${toneBg[tone]}`} />
                         <div className="min-w-0">
                           <p className="truncate font-medium">{i.topic || i.category?.name || "Interview"} · {i.difficulty}</p>
-                          <p className="mt-0.5 font-mono text-xs text-slate-muted">{formatWhen(i.createdAt)}</p>
+                          <p className="mt-0.5 font-mono text-xs text-slate-muted">{formatWhen(i.createdAt)}{i.timed ? " · ⏱ Timed" : ""}</p>
                         </div>
                       </div>
                       <div className="flex shrink-0 items-center gap-5">

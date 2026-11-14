@@ -19,7 +19,7 @@ export async function POST(req) {
     // Same message for both cases so we don't reveal which emails exist
     if (!valid) return NextResponse.json({ error: "Incorrect email or password." }, { status: 401 });
 
-    await createSession(user._id);
+    await createSession(user._id, user.tokenVersion ?? 0);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[login]", err);

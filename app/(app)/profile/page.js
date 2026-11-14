@@ -5,6 +5,7 @@ import { getSessionUserId } from "@/lib/session";
 import { getProfileData } from "@/lib/profile";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
+import ChangePasswordForm from "@/components/profile/ChangePasswordForm";
 import LevelBadges from "@/components/profile/LevelBadges";
 import ProfileActivity from "@/components/profile/ProfileActivity";
 
@@ -42,6 +43,17 @@ export default async function MyProfilePage() {
             <ProfileForm
               user={{ name: profile.user.name, username: profile.user.username, email: priv?.email ?? "", phone: priv?.phone ?? "", image: profile.user.image, bio: profile.user.bio, emailVerified: Boolean(priv?.emailVerified) }}
             />
+          </div>
+        </details>
+
+        <details className="group rounded-2xl border border-ink-line bg-ink-soft/40 open:pb-6">
+          <summary className="focus-ring flex cursor-pointer list-none items-center justify-between rounded-2xl px-6 py-4 font-medium">
+            <span>Change password</span>
+            <span className="font-mono text-xs text-slate-muted group-open:hidden">Update your password ▾</span>
+            <span className="hidden font-mono text-xs text-slate-muted group-open:inline">Close ▴</span>
+          </summary>
+          <div className="px-4 sm:px-6">
+            <ChangePasswordForm />
           </div>
         </details>
 

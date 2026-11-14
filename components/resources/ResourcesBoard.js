@@ -6,6 +6,8 @@ import { timeAgo } from "@/lib/time";
 import { RESOURCE_TAGS } from "@/lib/resources";
 import { uploadImage } from "@/lib/upload";
 import Thumb from "@/components/resources/Thumb";
+import TopicPicker from "@/components/TopicPicker";
+import TopicChips from "@/components/TopicChips";
 import { SearchIcon } from "@/components/Icons";
 
 async function api(url, options) {
@@ -262,7 +264,12 @@ export default function ResourcesBoard() {
     }
   }
 
-  const allTopicsCount = Object.values(tagCounts).reduce((a, b) => a + b, 0);
+
+  // topics people typed themselves: the busiest few get a chip, the rest go in a "More topics" menu.
+  // The topic you are filtering by always keeps its chip, even when it has no results under the other filters.
+  const customTags = Object.keys(tagCounts)
+    .filter((t) => !RESOURCE_TAGS.includes(t))
+    .sort((a, b) => tagCounts[b] - tagCounts[a] || a.localeCompare(b));
   const chip = (active) =>
     `focus-ring shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
       active ? "border-indigo bg-indigo text-white" : "border-ink-line text-slate-muted hover:border-indigo/60 hover:text-paper"}`;
@@ -288,17 +295,7 @@ export default function ResourcesBoard() {
       </div>
 
       {/* ---- topics ---- */}
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Filter by topic">
-        <button type="button" aria-pressed={tag === ""} onClick={() => setTag("")} className={chip(tag === "")}>
-          All topics <span className="ml-1 font-mono text-xs opacity-70">{allTopicsCount}</span>
-        </button>
-        {RESOURCE_TAGS.map((t) => (
-          <button key={t} type="button" aria-pressed={tag === t} onClick={() => setTag(tag === t ? "" : t)}
-            className={`${chip(tag === t)} ${tag !== t && !(tagCounts[t] > 0) ? "opacity-50" : ""}`}>
-            {t} <span className="ml-1 font-mono text-xs opacity-70">{tagCounts[t] ?? 0}</span>
-          </button>
-        ))}
-      </div>
+      <TopicChips presets={RESOURCE_TAGS} counts={tagCounts} selected={tag} onSelect={setTag} />
 
       {/* ---- type / sort / mine ---- */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -342,12 +339,7 @@ export default function ResourcesBoard() {
               <label htmlFor="r-title" className="mb-2 block text-sm font-medium">Title</label>
               <input id="r-title" value={form.title} onChange={set("title")} maxLength={120} placeholder="e.g. STAR method explained" className="field focus-ring" required />
             </div>
-            <div>
-              <label htmlFor="r-tag" className="mb-2 block text-sm font-medium">Topic</label>
-              <select id="r-tag" value={form.tag} onChange={set("tag")} className="field focus-ring">
-                {RESOURCE_TAGS.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
+            <TopicPicker id="r-tag" value={form.tag} onChange={(v) => setForm((f) => ({ ...f, tag: v }))} presets={RESOURCE_TAGS} suggestions={customTags} />
           </div>
           <div>
             <label htmlFor="r-url" className="mb-2 block text-sm font-medium">Link</label>
@@ -375,7 +367,7 @@ export default function ResourcesBoard() {
           </div>
           {formError && <p role="alert" className="text-sm text-signal-red">{formError}</p>}
           <div className="flex justify-end">
-            <button type="submit" disabled={saving || thumbBusy} className="btn-primary px-6 py-2.5 text-sm disabled:opacity-60">{saving ? "Adding…" : "Add resource"}</button>
+            <button type="submit" disabled={saving || thumbBusy || !form.tag.trim()} className="btn-primary px-6 py-2.5 text-sm disabled:opacity-60">{saving ? "Adding…" : "Add resource"}</button>
           </div>
         </form>
       )}

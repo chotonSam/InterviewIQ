@@ -7,7 +7,7 @@ import Question from "@/lib/models/Question";
 import { getSessionUserId } from "@/lib/session";
 import { generateQuestions } from "@/lib/gemini";
 import { getCustomCategory } from "@/lib/categories";
-import { LEVELS, sanitizeTopic, isValidTopic, customKey, unlockedLevels } from "@/lib/topics";
+import { LEVELS, TIME_LIMITS, sanitizeTopic, isValidTopic, customKey, unlockedLevels } from "@/lib/topics";
 
 const QUESTION_COUNT = 10;
 
@@ -20,7 +20,8 @@ export async function POST(req) {
   if (!userId) return NextResponse.json({ error: "Please log in." }, { status: 401 });
 
   try {
-    const { categoryId, customTopic, difficulty } = await req.json();
+    const { categoryId, customTopic, difficulty, timed: timedRaw } = await req.json();
+    const timed = timedRaw === true;
     if (!LEVELS.includes(difficulty)) return NextResponse.json({ error: "Choose a difficulty." }, { status: 400 });
 
     // ---- which topic? ----
@@ -56,7 +57,8 @@ export async function POST(req) {
     }
 
     // ---- unfinished interview at this level? continue it instead of making a new one ----
-    const unfinished = await Interview.findOne({ user: userId, status: "in_progress", difficulty, ...sameTopic }).select("_id").lean();
+    // (a timed and an untimed attempt are kept separate, so asking for "timed" never drops you into an untimed one)
+    const unfinished = await Interview.findOne({ user: userId, status: "in_progress", difficulty, timed: timed ? true : { $ne: true }, ...sameTopic }).select("_id").lean();
     if (unfinished) return NextResponse.json({ id: String(unfinished._id), resumed: true });
 
     // ---- generate FIRST, so a failed AI call leaves nothing behind ----
@@ -69,7 +71,10 @@ export async function POST(req) {
       return NextResponse.json({ error: "The AI could not generate questions right now. Please try again." + hint }, { status: 502 });
     }
 
-    const interview = await Interview.create({ user: userId, category: category._id, topic, topicKey, difficulty });
+    const interview = await Interview.create({
+      user: userId, category: category._id, topic, topicKey, difficulty,
+      timed, secondsPerQuestion: timed ? TIME_LIMITS[difficulty] : 0,
+    });
     await Question.insertMany(
       questions.map((q, i) => ({ interview: interview._id, order: i + 1, text: q.text, code: q.code, kind: q.kind }))
     );
