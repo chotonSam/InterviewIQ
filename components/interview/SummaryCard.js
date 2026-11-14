@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Animate from "@/components/motion/Animate";
 import CountUp from "@/components/motion/CountUp";
+import { formatDuration } from "@/lib/topics";
 
 export default function SummaryCard({ interview, results, onReview }) {
   const router = useRouter();
@@ -16,6 +17,9 @@ export default function SummaryCard({ interview, results, onReview }) {
   const strong = scores.filter((s) => s >= 70).length;
   const tone = average >= 70 ? "text-signal-green" : average >= 40 ? "text-signal-amber" : "text-signal-red";
   const next = interview.nextLevel;
+  const times = interview.questions.map((q) => results[q.id]?.time ?? 0);
+  const avgTime = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
+  const ranOut = interview.questions.filter((q) => results[q.id]?.timedOut).length;
 
   async function startNext() {
     setError("");
@@ -47,6 +51,12 @@ export default function SummaryCard({ interview, results, onReview }) {
       <p className="mt-3 text-sm text-slate-muted">
         {strong} of {scores.length} answers scored 70 or higher.
       </p>
+      {avgTime > 0 && (
+        <p className="mt-1 font-mono text-xs text-slate-muted">
+          ⏱ Average {formatDuration(avgTime)} per question
+          {interview.timed && <> · {scores.length - ranOut} of {scores.length} answered in time</>}
+        </p>
+      )}
 
       <div className="mx-auto mt-8 max-w-md rounded-xl border border-ink-line bg-ink/60 p-5">
         {next ? (

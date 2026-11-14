@@ -1,7 +1,8 @@
 import Animate from "@/components/motion/Animate";
 import CountUp from "@/components/motion/CountUp";
+import { formatDuration } from "@/lib/topics";
 
-export default function FeedbackPanel({ feedback, answer, isLast, onNext, onFinish }) {
+export default function FeedbackPanel({ feedback, answer, time = 0, timedOut = false, limit = 0, isLast, onNext, onFinish }) {
   const tone = feedback.score >= 70 ? "text-signal-green" : feedback.score >= 40 ? "text-signal-amber" : "text-signal-red";
 
   return (
@@ -13,6 +14,12 @@ export default function FeedbackPanel({ feedback, answer, isLast, onNext, onFini
           <span className="font-body text-base text-slate-muted">/100</span>
         </span>
       </div>
+
+      {(timedOut || time > 0) && (
+        <p className={`mb-4 font-mono text-xs ${timedOut ? "text-signal-red" : "text-slate-muted"}`}>
+          {timedOut ? "⏱ Time ran out" : `⏱ Answered in ${formatDuration(time)}${limit ? ` of ${formatDuration(limit)}` : ""}`}
+        </p>
+      )}
 
       {(feedback.strengths.length > 0 || feedback.improvements.length > 0) && (
         <ul className="mb-5 space-y-2 text-sm">

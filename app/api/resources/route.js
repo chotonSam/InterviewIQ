@@ -9,6 +9,8 @@ import { RESOURCE_TAGS, parseYouTubeId, cleanUrl } from "@/lib/resources";
 import { fetchPreviewImage } from "@/lib/og";
 import { verifiedOrResponse } from "@/lib/requireVerified";
 import { isCloudinaryImage } from "@/lib/avatar";
+import { sanitizeTag, isValidTag, parseTag } from "@/lib/topics";
+import { canonicalTag } from "@/lib/canonicalTag";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 6;
@@ -22,7 +24,8 @@ export async function GET(req) {
     const sp = new URL(req.url).searchParams;
     const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
     const type = ["video", "article"].includes(sp.get("type")) ? sp.get("type") : null;
-    const tag = RESOURCE_TAGS.includes(sp.get("tag")) ? sp.get("tag") : null;
+    const wantedTag = sanitizeTag(sp.get("tag") ?? "");
+    const tag = isValidTag(wantedTag) ? wantedTag : null; // any topic, built-in or typed by someone
     const q = (sp.get("q") ?? "").trim().slice(0, 60);
     const sort = ["new", "top", "popular"].includes(sp.get("sort")) ? sp.get("sort") : "new";
 
@@ -122,7 +125,8 @@ export async function POST(req) {
     const title = String(data.title ?? "").trim();
     const description = String(data.description ?? "").trim();
     const url = cleanUrl(data.url);
-    const tag = RESOURCE_TAGS.includes(data.tag) ? data.tag : "General";
+    const parsedTag = parseTag(data.tag);
+    if (parsedTag.error) return NextResponse.json({ error: parsedTag.error }, { status: 400 });
     const customThumb = typeof data.thumbnail === "string" && data.thumbnail !== "" ? data.thumbnail : "";
 
     if (!title || title.length > 120) return NextResponse.json({ error: "Title is required (max 120 characters)." }, { status: 400 });
@@ -134,6 +138,7 @@ export async function POST(req) {
     const blocked = await verifiedOrResponse(userId);
     if (blocked) return blocked;
 
+    const tag = parsedTag.tag ? await canonicalTag(LearningResource, parsedTag.tag, RESOURCE_TAGS) : "General";
     const youtubeId = parseYouTubeId(url);
     // Thumbnail: the one the user uploaded, else (articles) the page's own preview image. Videos use YouTube's.
     const thumbnail = customThumb || (youtubeId ? "" : await fetchPreviewImage(url));

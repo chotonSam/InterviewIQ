@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LEVELS, sanitizeTopic, isValidTopic, customKey, unlockedLevels, recommendedLevel } from "@/lib/topics";
+import { LEVELS, TIME_LIMITS, formatDuration, sanitizeTopic, isValidTopic, customKey, unlockedLevels, recommendedLevel } from "@/lib/topics";
 
 const HINTS = { Easy: "Fundamentals", Medium: "Real-world cases", Hard: "Tricky edge cases" };
 const CUSTOM = "__custom__";
@@ -12,6 +12,7 @@ export default function InterviewSetup({ categories, progress }) {
   const [choice, setChoice] = useState(categories[0]?.id ?? CUSTOM); // a category id, or CUSTOM
   const [customText, setCustomText] = useState("");
   const [difficulty, setDifficulty] = useState("Easy");
+  const [timed, setTimed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -39,7 +40,7 @@ export default function InterviewSetup({ categories, progress }) {
       const res = await fetch("/api/interviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(isCustom ? { customTopic: topic, difficulty } : { categoryId: choice, difficulty }),
+        body: JSON.stringify(isCustom ? { customTopic: topic, difficulty, timed } : { categoryId: choice, difficulty, timed }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "Could not start the interview.");
@@ -117,6 +118,20 @@ export default function InterviewSetup({ categories, progress }) {
         </div>
         <p className="mt-3 text-sm text-slate-muted">Finish Easy to unlock Medium, then finish Medium to unlock Hard. Each field has its own progress.</p>
       </fieldset>
+
+      <label className={`flex cursor-pointer items-start gap-4 rounded-2xl border p-5 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo ${timed ? "border-signal-amber/60 bg-signal-amber/5" : "border-ink-line bg-ink-soft/40 hover:border-indigo/50"}`}>
+        <input type="checkbox" role="switch" checked={timed} onChange={(e) => setTimed(e.target.checked)} className="peer sr-only" />
+        <span aria-hidden="true" className={`relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors ${timed ? "bg-signal-amber" : "bg-ink-line"}`}>
+          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${timed ? "left-[1.375rem]" : "left-0.5"}`} />
+        </span>
+        <span className="min-w-0">
+          <span className="block font-medium">Timed mode <span className="font-normal text-slate-muted">(optional)</span></span>
+          <span className="mt-1 block text-sm leading-relaxed text-slate-muted">
+            A countdown for every question — <span className="text-paper">{formatDuration(TIME_LIMITS[difficulty])} per question</span> on {difficulty} (Easy {formatDuration(TIME_LIMITS.Easy)} · Medium {formatDuration(TIME_LIMITS.Medium)} · Hard {formatDuration(TIME_LIMITS.Hard)}).
+            When it hits zero, what you have typed is submitted automatically. The clock pauses if you leave the page.
+          </span>
+        </span>
+      </label>
 
       {error && <p role="alert" className="rounded-lg border border-signal-red/40 bg-signal-red/10 px-4 py-3 text-sm text-signal-red">{error}</p>}
 

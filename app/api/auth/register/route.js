@@ -21,6 +21,7 @@ export async function POST(req) {
     if (!USERNAME_RE.test(username)) return NextResponse.json({ error: "Username must be 3–20 characters: letters, numbers, underscore." }, { status: 400 });
     if (!EMAIL_RE.test(email)) return NextResponse.json({ error: "Please enter a valid email." }, { status: 400 });
     if (password.length < 8) return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
+    if (Buffer.byteLength(password) > 72) return NextResponse.json({ error: "Password is too long (max 72 characters)." }, { status: 400 });
 
     await connectDB();
 
@@ -30,7 +31,7 @@ export async function POST(req) {
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await User.create({ name, username, email, phone, passwordHash });
 
-    await createSession(user._id);
+    await createSession(user._id, 0);
 
     // Email the verification link. A mail problem must never stop the account from being created.
     let emailSent = false;
